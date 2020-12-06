@@ -3,9 +3,11 @@ const AudioContext = window.AudioContext || window.webkitAudioContext; // webkit
 let audioCtx;
 let audioBuffer;
 let audioPlayer;
+let playing; // TODO put state into AudioPlayer
 
 function init() {
     audioCtx = new AudioContext();
+    runRenderLoop();
 }
 
 function loadAudioFile(file) {
@@ -41,6 +43,7 @@ async function stop() {
 }
 
 function onStart() {
+    playing = true;
     document.getElementById("btn-play-pause").value = "Pause";
     document.getElementById("time").textContent = "00:00";
     document.getElementById("duration").textContent = getTimeString(audioBuffer.duration);
@@ -55,8 +58,26 @@ function onResume() {
 }
 
 function onStop() {
+    playing = false;
     document.getElementById("btn-play-pause").value = "Play";
     document.getElementById("time").textContent = "00:00";
+}
+
+function runRenderLoop() {
+    const loop = () => {
+        update();
+        requestAnimationFrame(loop);
+    };
+    requestAnimationFrame(loop);
+}
+
+function update() {
+    if (!audioPlayer || !playing) {
+        return;
+    }
+    const currTime = audioPlayer.getCurrentTime();
+    document.getElementById("time").textContent = getTimeString(currTime);
+    document.getElementById("duration").textContent = getTimeString(audioBuffer.duration);
 }
 
 function getTimeString(time) {
