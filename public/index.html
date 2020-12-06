@@ -5,7 +5,22 @@
     <title>WebGL Audio Visualizer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-<body onload="start()">
+<body onload="init()">
+    <div>
+        <label for="audio-file">Audio File:</label>
+        <input type="file" id="audio-file" accept=".wav,.mp3,.ogg.,.au" onchange="loadAudioFile(this.files[0])">
+    </div>
+    <div>
+        <label>Status:</label>
+        <label id="status">No file selected</label>
+    </div>
+    <div>
+        <input type="button" id="btn-play-pause" value="Play" onclick="playOrPause()">
+        <input type="button" value="Stop" onclick="stop()">
+        <label id="time">00:00</label> / <label id="duration">--:--</label>
+    </div>
+
     <script src="src/app.js"></script>
+    <script src="src/audio-player.js"></script>
 </body>
 </html>
