@@ -8,6 +8,9 @@ let playing;
 let gl;
 let rectangle;
 
+const POSITION = [-0.1, 0.5];
+const SIZE = [1.5, 0.5];
+
 function init() {
     audioCtx = new AudioContext();
     initWebGL();
@@ -33,7 +36,7 @@ function createRectangle() {
     const shaderBaseUrl = "assets/shaders/vertex-color";
     const shader = new Shader(gl, shaderBaseUrl + ".vert", shaderBaseUrl + ".frag",
         () => {
-            rectangle = new Rectangle();
+            rectangle = new Rectangle(POSITION, SIZE);
             rectangle.init(gl, shader);
         });
 }

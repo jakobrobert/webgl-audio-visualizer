@@ -1,15 +1,19 @@
 class Rectangle {
-    constructor() {
-        // vertices and indices defined in counter-clockwise order
-        // TODO: calculate vertex positions from position and size instead of hardcoding
-        // TODO: color as parameter instead of hardcoding
+    constructor(position, size) {
+        // calculate vertex positions
+        // center is at (0, 0)
+        const left = -0.5 * size[0] + position[0];
+        const right = 0.5 * size[0] + position[0];
+        const bottom = -0.5 * size[1] + position[1];
+        const top = 0.5 * size[1] + position[1];
+
         this.vertices = [
             // counter-clockwise order
             // position         color
-            -0.5, -0.5,     1.0, 0.0, 0.0,  // left bottom, red
-            0.5, -0.5,      0.0, 1.0, 0.0,  // right bottom, green
-            0.5, 0.5,       0.0, 0.0, 1.0,  // right top, blue
-            -0.5, 0.5,      1.0, 1.0, 1.0,  // left top, white
+            left, bottom,   1.0, 0.0, 0.0,  // red
+            right, bottom,  0.0, 1.0, 0.0,  // green
+            right, top,     0.0, 0.0, 1.0,  // blue
+            left, top,      1.0, 1.0, 1.0,  // white
         ];
 
         this.indices = [
