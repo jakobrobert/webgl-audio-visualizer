@@ -6,11 +6,14 @@ let audioPlayer;
 let playing;
 
 let gl;
+let rectangle;
 
 function init() {
     audioCtx = new AudioContext();
     initWebGL();
     runRenderLoop();
+
+    createRectangle();
 }
 
 function initWebGL() {
@@ -24,6 +27,14 @@ function initWebGL() {
     }
     // set background color to black, fully opaque
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
+}
+
+function createRectangle() {
+    const shaderBaseUrl = "assets/shaders/vertex-color";
+    const shader = new Shader(gl, shaderBaseUrl + ".vert", shaderBaseUrl + ".frag",
+        () => {
+            console.log("Yeah");
+        });
 }
 
 function loadAudioFile(file) {
