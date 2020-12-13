@@ -1,5 +1,5 @@
 class Rectangle {
-    constructor(position, size) {
+    constructor(position, size, bottomColor, topColor) {
         // calculate vertex positions
         // position refers to left bottom
         const left = position[0];
@@ -10,10 +10,10 @@ class Rectangle {
         this.vertices = [
             // counter-clockwise order
             // position         color
-            left, bottom,   1.0, 0.0, 0.0,  // red
-            right, bottom,  0.0, 1.0, 0.0,  // green
-            right, top,     0.0, 0.0, 1.0,  // blue
-            left, top,      1.0, 1.0, 1.0,  // white
+            left, bottom,   bottomColor[0], bottomColor[1], bottomColor[2],
+            right, bottom,  bottomColor[0], bottomColor[1], bottomColor[2],
+            right, top,     topColor[0], topColor[1], topColor[2],
+            left, top,      topColor[0], topColor[1], topColor[2]
         ];
 
         this.indices = [

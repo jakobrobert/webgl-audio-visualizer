@@ -8,8 +8,10 @@ let playing;
 let gl;
 let rectangle;
 
-const POSITION = [-1.0, -1.0];
+const POSITION = [-1.0, -1.0]; // bottom left corner of viewport
 const SIZE = [0.5, 1.5];
+const BOTTOM_COLOR = [0.0, 1.0, 0.0]; // green
+const TOP_COLOR = [1.0, 0.0, 0.0]; // red
 
 function init() {
     audioCtx = new AudioContext();
@@ -36,7 +38,7 @@ function createRectangle() {
     const shaderBaseUrl = "assets/shaders/vertex-color";
     const shader = new Shader(gl, shaderBaseUrl + ".vert", shaderBaseUrl + ".frag",
         () => {
-            rectangle = new Rectangle(POSITION, SIZE);
+            rectangle = new Rectangle(POSITION, SIZE, BOTTOM_COLOR, TOP_COLOR);
             rectangle.init(gl, shader);
         });
 }
