@@ -2,9 +2,7 @@ class Shader {
     constructor(gl, vertexShaderUrl, fragmentShaderUrl, callback) {
         this.gl = gl;
         this.loadSource(vertexShaderUrl, vertexShaderSource => {
-            console.log(vertexShaderSource);
             this.loadSource(fragmentShaderUrl, fragmentShaderSource => {
-                console.log(fragmentShaderSource);
                 const vertexShader = this.compileShader(gl.VERTEX_SHADER, vertexShaderSource);
                 const fragmentShader = this.compileShader(gl.FRAGMENT_SHADER, fragmentShaderSource);
                 this.program = this.linkProgram(vertexShader, fragmentShader);

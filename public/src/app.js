@@ -114,7 +114,7 @@ function render() {
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     if (rectangle) {
-        //rectangle.draw();
+        rectangle.draw();
     }
 }
 
