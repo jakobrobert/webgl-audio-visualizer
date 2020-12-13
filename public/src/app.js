@@ -3,11 +3,27 @@ const AudioContext = window.AudioContext || window.webkitAudioContext; // webkit
 let audioCtx;
 let audioBuffer;
 let audioPlayer;
-let playing; // TODO put state into AudioPlayer
+let playing;
+
+let gl;
 
 function init() {
     audioCtx = new AudioContext();
+    initWebGL();
     runRenderLoop();
+}
+
+function initWebGL() {
+    // get webgl context
+    const canvas = document.getElementById("webgl-canvas");
+    gl = canvas.getContext("webgl");
+    if (!gl) {
+        const message = "Failed to initialize WebGL!";
+        alert(message);
+        throw new Error(message);
+    }
+    // set background color to black, fully opaque
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
 }
 
 function loadAudioFile(file) {
@@ -66,6 +82,7 @@ function onStop() {
 function runRenderLoop() {
     const loop = () => {
         update();
+        render();
         requestAnimationFrame(loop);
     };
     requestAnimationFrame(loop);
@@ -78,6 +95,11 @@ function update() {
     const currTime = audioPlayer.getCurrentTime();
     document.getElementById("time").textContent = getTimeString(currTime);
     document.getElementById("duration").textContent = getTimeString(audioBuffer.duration);
+}
+
+function render() {
+    // clear color buffer with specified background color
+    gl.clear(gl.COLOR_BUFFER_BIT)
 }
 
 function getTimeString(time) {
