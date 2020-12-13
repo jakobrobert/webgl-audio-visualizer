@@ -33,7 +33,8 @@ function createRectangle() {
     const shaderBaseUrl = "assets/shaders/vertex-color";
     const shader = new Shader(gl, shaderBaseUrl + ".vert", shaderBaseUrl + ".frag",
         () => {
-            console.log("Yeah");
+            rectangle = new Rectangle();
+            rectangle.init(gl, shader);
         });
 }
 
@@ -110,7 +111,11 @@ function update() {
 
 function render() {
     // clear color buffer with specified background color
-    gl.clear(gl.COLOR_BUFFER_BIT)
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    if (rectangle) {
+        //rectangle.draw();
+    }
 }
 
 function getTimeString(time) {

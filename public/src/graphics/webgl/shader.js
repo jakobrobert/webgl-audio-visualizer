@@ -2,7 +2,9 @@ class Shader {
     constructor(gl, vertexShaderUrl, fragmentShaderUrl, callback) {
         this.gl = gl;
         this.loadSource(vertexShaderUrl, vertexShaderSource => {
+            console.log(vertexShaderSource);
             this.loadSource(fragmentShaderUrl, fragmentShaderSource => {
+                console.log(fragmentShaderSource);
                 const vertexShader = this.compileShader(gl.VERTEX_SHADER, vertexShaderSource);
                 const fragmentShader = this.compileShader(gl.FRAGMENT_SHADER, fragmentShaderSource);
                 this.program = this.linkProgram(vertexShader, fragmentShader);
@@ -38,12 +40,12 @@ class Shader {
     loadSource(url, callback) {
         fetch(url)
             .then(response => response.text())
-            .then(text => {
-                callback(text);
-            })
             .catch(error => {
                 console.error(error);
                 throw new Error("Failed to load shader source from '" + url + "'!");
+            })
+            .then(text => {
+                callback(text);
             });
     }
 
