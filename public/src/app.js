@@ -8,8 +8,8 @@ let playing;
 let gl;
 let rectangle;
 
-const POSITION = [-0.1, 0.5];
-const SIZE = [1.5, 0.5];
+const POSITION = [-1.0, -1.0];
+const SIZE = [0.5, 1.5];
 
 function init() {
     audioCtx = new AudioContext();

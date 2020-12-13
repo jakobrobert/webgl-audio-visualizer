@@ -1,11 +1,11 @@
 class Rectangle {
     constructor(position, size) {
         // calculate vertex positions
-        // center is at (0, 0)
-        const left = -0.5 * size[0] + position[0];
-        const right = 0.5 * size[0] + position[0];
-        const bottom = -0.5 * size[1] + position[1];
-        const top = 0.5 * size[1] + position[1];
+        // position refers to left bottom
+        const left = position[0];
+        const bottom = position[1];
+        const right = left + size[0];
+        const top = bottom + size[1];
 
         this.vertices = [
             // counter-clockwise order
