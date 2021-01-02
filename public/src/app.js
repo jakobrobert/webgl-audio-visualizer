@@ -1,9 +1,17 @@
-const AudioContext = window.AudioContext || window.webkitAudioContext; // webkit for legacy browsers
+const MIN_DECIBELS = -90;
+const WINDOW_SIZE = 512;
 
 let audioCtx;
+let analyzer;
 let audioBuffer;
 let audioPlayer;
 let playing;
+
+let frequencyDomainData;
+
+let windowSizeInMs;
+
+let timer;
 
 let gl;
 let rectangle;
@@ -14,11 +22,24 @@ const BOTTOM_COLOR = [0.0, 1.0, 0.0]; // green
 const TOP_COLOR = [1.0, 0.0, 0.0]; // red
 
 function init() {
-    audioCtx = new AudioContext();
+    initAudio();
     initWebGL();
     runRenderLoop();
-
     createRectangle();
+}
+
+function initAudio() {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)(); // webkit for legacy browsers
+
+    analyzer = audioCtx.createAnalyser();
+    analyzer.minDecibels = MIN_DECIBELS;
+    analyzer.maxDecibels = 0;
+    analyzer.fftSize = WINDOW_SIZE;
+    analyzer.connect(audioCtx.destination);
+
+    frequencyDomainData = new Uint8Array(analyzer.frequencyBinCount);
+    const windowSizeInSeconds = WINDOW_SIZE / audioCtx.sampleRate;
+    windowSizeInMs = windowSizeInSeconds * 1000;
 }
 
 function initWebGL() {
@@ -54,7 +75,7 @@ function loadAudioFile(file) {
         }
         const data = reader.result;
         audioBuffer = await audioCtx.decodeAudioData(data);
-        audioPlayer = new AudioPlayer(audioCtx, audioBuffer, audioCtx.destination);
+        audioPlayer = new AudioPlayer(audioCtx, audioBuffer, analyzer);
         audioPlayer.setCallbacks(onStart, onPause, onResume, onStop);
         statusLabel.textContent = "Ready";
     };
@@ -76,6 +97,13 @@ async function stop() {
 }
 
 function onStart() {
+    if (timer) {
+        clearInterval(timer);
+    }
+    timer = setInterval(() => {
+        update();
+    }, windowSizeInMs);
+
     playing = true;
     document.getElementById("btn-play-pause").value = "Pause";
     document.getElementById("time").textContent = "00:00";
@@ -91,27 +119,36 @@ function onResume() {
 }
 
 function onStop() {
+    if (timer) {
+        clearInterval(timer);
+    }
+
     playing = false;
     document.getElementById("btn-play-pause").value = "Play";
     document.getElementById("time").textContent = "00:00";
-}
-
-function runRenderLoop() {
-    const loop = () => {
-        update();
-        render();
-        requestAnimationFrame(loop);
-    };
-    requestAnimationFrame(loop);
 }
 
 function update() {
     if (!audioPlayer || !playing) {
         return;
     }
+    updateTime();
+    analyzer.getByteFrequencyData(frequencyDomainData);
+    console.log(frequencyDomainData);
+}
+
+function updateTime() {
     const currTime = audioPlayer.getCurrentTime();
     document.getElementById("time").textContent = getTimeString(currTime);
     document.getElementById("duration").textContent = getTimeString(audioBuffer.duration);
+}
+
+function runRenderLoop() {
+    const loop = () => {
+        render();
+        requestAnimationFrame(loop);
+    };
+    requestAnimationFrame(loop);
 }
 
 function render() {
