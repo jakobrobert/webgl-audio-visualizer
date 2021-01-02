@@ -1,5 +1,8 @@
-const MIN_DECIBELS = -90;
+const MIN_DECIBELS = -90.0;
 const WINDOW_SIZE = 512;
+
+const GREEN = [0.0, 1.0, 0.0];
+const RED = [1.0, 0.0, 0.0];
 
 let audioCtx;
 let analyzer;
@@ -14,18 +17,12 @@ let windowSizeInMs;
 let timer;
 
 let gl;
-let rectangle;
-
-const POSITION = [-1.0, -1.0]; // bottom left corner of viewport
-const SIZE = [0.5, 1.5];
-const BOTTOM_COLOR = [0.0, 1.0, 0.0]; // green
-const TOP_COLOR = [1.0, 0.0, 0.0]; // red
+let rectangles = [];
 
 function init() {
     initAudio();
     initWebGL();
     runRenderLoop();
-    createRectangle();
 }
 
 function initAudio() {
@@ -33,7 +30,7 @@ function initAudio() {
 
     analyzer = audioCtx.createAnalyser();
     analyzer.minDecibels = MIN_DECIBELS;
-    analyzer.maxDecibels = 0;
+    analyzer.maxDecibels = 0.0;
     analyzer.fftSize = WINDOW_SIZE;
     analyzer.connect(audioCtx.destination);
 
@@ -53,15 +50,6 @@ function initWebGL() {
     }
     // set background color to black, fully opaque
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
-}
-
-function createRectangle() {
-    const shaderBaseUrl = "assets/shaders/vertex-color";
-    const shader = new Shader(gl, shaderBaseUrl + ".vert", shaderBaseUrl + ".frag",
-        () => {
-            rectangle = new Rectangle(POSITION, SIZE, BOTTOM_COLOR, TOP_COLOR);
-            rectangle.init(gl, shader);
-        });
 }
 
 function loadAudioFile(file) {
@@ -134,7 +122,7 @@ function update() {
     }
     updateTime();
     analyzer.getByteFrequencyData(frequencyDomainData);
-    console.log(frequencyDomainData);
+    updateSpectrumChart();
 }
 
 function updateTime() {
@@ -142,6 +130,42 @@ function updateTime() {
     document.getElementById("time").textContent = getTimeString(currTime);
     document.getElementById("duration").textContent = getTimeString(audioBuffer.duration);
 }
+
+// TODO: Extract into class
+function updateSpectrumChart() {
+    // remove old rectangles
+    for (const rectangle of rectangles) {
+        rectangle.destroy();
+    }
+    rectangles = [];
+
+    // width of each segment (in normalized coords, whole viewport has a size of 2 x 2)
+    const width = 2.0 / frequencyDomainData.length;
+    // start with bottom left corner of viewport
+    let x = -1.0;
+    const y = -1.0;
+
+    for (const value of frequencyDomainData) {
+        console.log(x);
+        const normalizedValue = value / 255.0;
+        const height = 2.0 * normalizedValue;
+        // TODO interpolate top color dependent on normalized value
+        const rectangle = new Rectangle([x, y], [width, height], GREEN, RED);
+        // TODO init, need shader
+        rectangles.push(rectangle);
+        x += width;
+    }
+}
+
+// TODO Remove
+/*function createRectangle() {
+    const shaderBaseUrl = "assets/shaders/vertex-color";
+    const shader = new Shader(gl, shaderBaseUrl + ".vert", shaderBaseUrl + ".frag",
+        () => {
+            rectangle = new Rectangle(POSITION, SIZE, BOTTOM_COLOR, TOP_COLOR);
+            rectangle.init(gl, shader);
+        });
+}*/
 
 function runRenderLoop() {
     const loop = () => {
@@ -155,7 +179,7 @@ function render() {
     // clear color buffer with specified background color
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    if (rectangle) {
+    for (const rectangle of rectangles) {
         rectangle.draw();
     }
 }
