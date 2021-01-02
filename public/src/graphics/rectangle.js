@@ -25,26 +25,14 @@ class Rectangle {
 
     init(gl, shader) {
         this.gl = gl;
-
         this.shader = shader;
+
         this.vertexBuffer = new VertexBuffer(gl, this.vertices);
         this.indexBuffer = new IndexBuffer(gl, this.indices);
 
         this.vertexLayout = new VertexLayout(gl);
         this.vertexLayout.addAttribute(this.shader.getAttributeLocation("a_position"), 2);
         this.vertexLayout.addAttribute(this.shader.getAttributeLocation("a_color"), 3);
-
-        /*// parameters required for specification of vertex layout
-        // TODO use VertexLayout class
-        this.positionLocation = this.shader.getAttributeLocation("a_position");
-        this.positionSize = 2;
-        this.positionOffset = 0;
-        this.colorLocation = this.shader.getAttributeLocation("a_color");
-        this.colorSize = 3;
-        this.colorOffset = this.positionSize * Float32Array.BYTES_PER_ELEMENT;
-        this.vertexStride = (this.positionSize + this.colorSize) * Float32Array.BYTES_PER_ELEMENT;
-
-         */
     }
 
     destroy() {
