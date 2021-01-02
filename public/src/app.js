@@ -1,24 +1,51 @@
-const AudioContext = window.AudioContext || window.webkitAudioContext; // webkit for legacy browsers
+const MIN_DECIBELS = -70.0;
+const MAX_DECIBELS = -20.0;
+const WINDOW_SIZE = 256;
+
+const GREEN = [0.0, 1.0, 0.0];
+const RED = [1.0, 0.0, 0.0];
 
 let audioCtx;
+let analyzer;
 let audioBuffer;
 let audioPlayer;
 let playing;
 
-let gl;
-let rectangle;
+let frequencyDomainData;
 
-const POSITION = [-1.0, -1.0]; // bottom left corner of viewport
-const SIZE = [0.5, 1.5];
-const BOTTOM_COLOR = [0.0, 1.0, 0.0]; // green
-const TOP_COLOR = [1.0, 0.0, 0.0]; // red
+let windowSizeInMs;
+
+let timer;
+
+let gl;
+let shader;
+let rendererReady = false;
+let rectangles = [];
 
 function init() {
-    audioCtx = new AudioContext();
+    initAudio();
     initWebGL();
     runRenderLoop();
 
-    createRectangle();
+    const shaderBaseUrl = "assets/shaders/vertex-color";
+    shader = new Shader(gl, shaderBaseUrl + ".vert", shaderBaseUrl + ".frag",
+        () => {
+            rendererReady = true;
+        });
+}
+
+function initAudio() {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)(); // webkit for legacy browsers
+
+    analyzer = audioCtx.createAnalyser();
+    analyzer.minDecibels = MIN_DECIBELS;
+    analyzer.maxDecibels = MAX_DECIBELS;
+    analyzer.fftSize = WINDOW_SIZE;
+    analyzer.connect(audioCtx.destination);
+
+    frequencyDomainData = new Uint8Array(analyzer.frequencyBinCount);
+    const windowSizeInSeconds = WINDOW_SIZE / audioCtx.sampleRate;
+    windowSizeInMs = windowSizeInSeconds * 1000;
 }
 
 function initWebGL() {
@@ -34,15 +61,6 @@ function initWebGL() {
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
 }
 
-function createRectangle() {
-    const shaderBaseUrl = "assets/shaders/vertex-color";
-    const shader = new Shader(gl, shaderBaseUrl + ".vert", shaderBaseUrl + ".frag",
-        () => {
-            rectangle = new Rectangle(POSITION, SIZE, BOTTOM_COLOR, TOP_COLOR);
-            rectangle.init(gl, shader);
-        });
-}
-
 function loadAudioFile(file) {
     const statusLabel = document.getElementById("status");
     statusLabel.textContent = "Loading...";
@@ -54,7 +72,7 @@ function loadAudioFile(file) {
         }
         const data = reader.result;
         audioBuffer = await audioCtx.decodeAudioData(data);
-        audioPlayer = new AudioPlayer(audioCtx, audioBuffer, audioCtx.destination);
+        audioPlayer = new AudioPlayer(audioCtx, audioBuffer, analyzer);
         audioPlayer.setCallbacks(onStart, onPause, onResume, onStop);
         statusLabel.textContent = "Ready";
     };
@@ -76,6 +94,13 @@ async function stop() {
 }
 
 function onStart() {
+    if (timer) {
+        clearInterval(timer);
+    }
+    timer = setInterval(() => {
+        update();
+    }, windowSizeInMs);
+
     playing = true;
     document.getElementById("btn-play-pause").value = "Pause";
     document.getElementById("time").textContent = "00:00";
@@ -91,34 +116,79 @@ function onResume() {
 }
 
 function onStop() {
+    if (timer) {
+        clearInterval(timer);
+    }
+
     playing = false;
     document.getElementById("btn-play-pause").value = "Play";
     document.getElementById("time").textContent = "00:00";
-}
-
-function runRenderLoop() {
-    const loop = () => {
-        update();
-        render();
-        requestAnimationFrame(loop);
-    };
-    requestAnimationFrame(loop);
 }
 
 function update() {
     if (!audioPlayer || !playing) {
         return;
     }
+    updateTime();
+    analyzer.getByteFrequencyData(frequencyDomainData);
+    updateSpectrumChart();
+}
+
+function updateTime() {
     const currTime = audioPlayer.getCurrentTime();
     document.getElementById("time").textContent = getTimeString(currTime);
     document.getElementById("duration").textContent = getTimeString(audioBuffer.duration);
+}
+
+function updateSpectrumChart() {
+    if (!rendererReady) {
+        return;
+    }
+
+    // remove old rectangles
+    for (const rectangle of rectangles) {
+        rectangle.destroy();
+    }
+    rectangles = [];
+
+    // width of each segment (in normalized coords, whole viewport has a size of 2 x 2)
+    const width = 2.0 / frequencyDomainData.length;
+    // start with bottom left corner of viewport
+    let x = -1.0;
+    const y = -1.0;
+
+    for (const value of frequencyDomainData) {
+        const normalizedValue = value / 255.0;
+        const height = 2.0 * normalizedValue;
+        const topColor = interpolateColor(GREEN, RED, normalizedValue);
+        const rectangle = new Rectangle([x, y], [width, height], GREEN, topColor);
+        rectangle.init(gl, shader);
+        rectangles.push(rectangle);
+        x += width;
+    }
+}
+
+function interpolateColor(startColor, endColor, alpha) {
+    const result = [];
+    result[0] = (1.0 - alpha) * startColor[0] + alpha * endColor[0];
+    result[1] = (1.0 - alpha) * startColor[1] + alpha * endColor[1];
+    result[2] = (1.0 - alpha) * startColor[2] + alpha * endColor[2];
+    return result;
+}
+
+function runRenderLoop() {
+    const loop = () => {
+        render();
+        requestAnimationFrame(loop);
+    };
+    requestAnimationFrame(loop);
 }
 
 function render() {
     // clear color buffer with specified background color
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    if (rectangle) {
+    for (const rectangle of rectangles) {
         rectangle.draw();
     }
 }
