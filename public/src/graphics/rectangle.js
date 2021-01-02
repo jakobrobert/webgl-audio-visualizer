@@ -31,6 +31,7 @@ class Rectangle {
         this.indexBuffer = new IndexBuffer(gl, this.indices);
 
         // parameters required for specification of vertex layout
+        // TODO use VertexLayout class
         this.positionLocation = this.shader.getAttributeLocation("a_position");
         this.positionSize = 2;
         this.positionOffset = 0;
