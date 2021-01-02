@@ -12,8 +12,8 @@ class Rectangle {
             // position         color
             left, bottom,   bottomColor[0], bottomColor[1], bottomColor[2],
             right, bottom,  bottomColor[0], bottomColor[1], bottomColor[2],
-            right, top,     topColor[0], topColor[1], topColor[2],
-            left, top,      topColor[0], topColor[1], topColor[2]
+            right, top,     topColor[0],    topColor[1],    topColor[2],
+            left, top,      topColor[0],    topColor[1],    topColor[2]
         ];
 
         this.indices = [
@@ -30,7 +30,12 @@ class Rectangle {
         this.vertexBuffer = new VertexBuffer(gl, this.vertices);
         this.indexBuffer = new IndexBuffer(gl, this.indices);
 
-        // parameters required for specification of vertex layout
+        this.vertexLayout = new VertexLayout(gl);
+        this.vertexLayout.addAttribute(this.shader.getAttributeLocation("a_position"), 2);
+        this.vertexLayout.addAttribute(this.shader.getAttributeLocation("a_color"), 3);
+
+        /*// parameters required for specification of vertex layout
+        // TODO use VertexLayout class
         this.positionLocation = this.shader.getAttributeLocation("a_position");
         this.positionSize = 2;
         this.positionOffset = 0;
@@ -38,6 +43,8 @@ class Rectangle {
         this.colorSize = 3;
         this.colorOffset = this.positionSize * Float32Array.BYTES_PER_ELEMENT;
         this.vertexStride = (this.positionSize + this.colorSize) * Float32Array.BYTES_PER_ELEMENT;
+
+         */
     }
 
     destroy() {
@@ -46,30 +53,16 @@ class Rectangle {
     }
 
     draw() {
-        const gl = this.gl;
-
         this.shader.bind();
         this.vertexBuffer.bind();
         this.indexBuffer.bind();
+        this.vertexLayout.enableAttributes();
 
-        // specify vertex layout
-        // need to do it for each draw call, state is lost after unbinding vertex buffer
-        // position attribute
-        gl.vertexAttribPointer(this.positionLocation, this.positionSize, gl.FLOAT, false,
-            this.vertexStride, this.positionOffset);
-        gl.enableVertexAttribArray(this.positionLocation);
-        // color attribute
-        gl.vertexAttribPointer(this.colorLocation, this.colorSize, gl.FLOAT, false,
-            this.vertexStride, this.colorOffset);
-        gl.enableVertexAttribArray(this.colorLocation);
+        this.gl.drawElements(this.gl.TRIANGLES, this.indices.length, this.gl.UNSIGNED_SHORT, 0);
 
-        gl.drawElements(gl.TRIANGLES, this.indices.length, gl.UNSIGNED_SHORT, 0);
-
-        // leave a clean state to prevent errors
-        gl.disableVertexAttribArray(this.positionLocation);
-        gl.disableVertexAttribArray(this.colorLocation);
         this.shader.unbind();
         this.vertexBuffer.unbind();
         this.indexBuffer.unbind();
+        this.vertexLayout.disableAttributes();
     }
 }
