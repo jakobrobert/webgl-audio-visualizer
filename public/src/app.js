@@ -1,5 +1,6 @@
-const MIN_DECIBELS = -90.0;
-const WINDOW_SIZE = 512;
+const MIN_DECIBELS = -70.0;
+const MAX_DECIBELS = -20.0;
+const WINDOW_SIZE = 256;
 
 const GREEN = [0.0, 1.0, 0.0];
 const RED = [1.0, 0.0, 0.0];
@@ -38,7 +39,7 @@ function initAudio() {
 
     analyzer = audioCtx.createAnalyser();
     analyzer.minDecibels = MIN_DECIBELS;
-    analyzer.maxDecibels = 0.0;
+    analyzer.maxDecibels = MAX_DECIBELS;
     analyzer.fftSize = WINDOW_SIZE;
     analyzer.connect(audioCtx.destination);
 
