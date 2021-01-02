@@ -159,12 +159,20 @@ function updateSpectrumChart() {
     for (const value of frequencyDomainData) {
         const normalizedValue = value / 255.0;
         const height = 2.0 * normalizedValue;
-        // TODO interpolate top color dependent on normalized value
-        const rectangle = new Rectangle([x, y], [width, height], GREEN, RED);
+        const topColor = interpolateColor(GREEN, RED, normalizedValue);
+        const rectangle = new Rectangle([x, y], [width, height], GREEN, topColor);
         rectangle.init(gl, shader);
         rectangles.push(rectangle);
         x += width;
     }
+}
+
+function interpolateColor(startColor, endColor, alpha) {
+    const result = [];
+    result[0] = (1.0 - alpha) * startColor[0] + alpha * endColor[0];
+    result[1] = (1.0 - alpha) * startColor[1] + alpha * endColor[1];
+    result[2] = (1.0 - alpha) * startColor[2] + alpha * endColor[2];
+    return result;
 }
 
 function runRenderLoop() {
