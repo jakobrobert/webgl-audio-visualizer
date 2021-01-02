@@ -17,12 +17,20 @@ let windowSizeInMs;
 let timer;
 
 let gl;
+let shader;
+let rendererReady = false;
 let rectangles = [];
 
 function init() {
     initAudio();
     initWebGL();
     runRenderLoop();
+
+    const shaderBaseUrl = "assets/shaders/vertex-color";
+    shader = new Shader(gl, shaderBaseUrl + ".vert", shaderBaseUrl + ".frag",
+        () => {
+            rendererReady = true;
+        });
 }
 
 function initAudio() {
@@ -131,8 +139,11 @@ function updateTime() {
     document.getElementById("duration").textContent = getTimeString(audioBuffer.duration);
 }
 
-// TODO: Extract into class
 function updateSpectrumChart() {
+    if (!rendererReady) {
+        return;
+    }
+
     // remove old rectangles
     for (const rectangle of rectangles) {
         rectangle.destroy();
@@ -146,26 +157,15 @@ function updateSpectrumChart() {
     const y = -1.0;
 
     for (const value of frequencyDomainData) {
-        console.log(x);
         const normalizedValue = value / 255.0;
         const height = 2.0 * normalizedValue;
         // TODO interpolate top color dependent on normalized value
         const rectangle = new Rectangle([x, y], [width, height], GREEN, RED);
-        // TODO init, need shader
+        rectangle.init(gl, shader);
         rectangles.push(rectangle);
         x += width;
     }
 }
-
-// TODO Remove
-/*function createRectangle() {
-    const shaderBaseUrl = "assets/shaders/vertex-color";
-    const shader = new Shader(gl, shaderBaseUrl + ".vert", shaderBaseUrl + ".frag",
-        () => {
-            rectangle = new Rectangle(POSITION, SIZE, BOTTOM_COLOR, TOP_COLOR);
-            rectangle.init(gl, shader);
-        });
-}*/
 
 function runRenderLoop() {
     const loop = () => {
