@@ -5,6 +5,10 @@ const WINDOW_SIZE = 256;
 const GREEN = [0.0, 1.0, 0.0];
 const RED = [1.0, 0.0, 0.0];
 
+const FOV = 45.0;
+const NEAR = 0.1;
+const FAR = 100.0;
+
 let audioCtx;
 let analyzer;
 let audioBuffer;
@@ -55,9 +59,11 @@ function initRenderer() {
     // set background color to black, fully opaque
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
-    camera = new PerspectiveCamera();
+    const aspectRatio = canvas.width / canvas.height;
+    camera = new PerspectiveCamera(FOV, aspectRatio, NEAR, FAR);
 
     shader = new Shader(gl, "assets/shaders/vertex-color", () => {
+        // TODO: run renderer loop here
         rendererReady = true;
     });
 }
