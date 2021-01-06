@@ -5,6 +5,10 @@ const WINDOW_SIZE = 256;
 const GREEN = [0.0, 1.0, 0.0];
 const RED = [1.0, 0.0, 0.0];
 
+const FOV = 45.0;
+const NEAR = 0.1;
+const FAR = 100.0;
+
 let audioCtx;
 let analyzer;
 let audioBuffer;
@@ -21,17 +25,12 @@ let gl;
 let shader;
 let rendererReady = false;
 let rectangles = [];
+let camera;
 
 function init() {
     initAudio();
-    initWebGL();
+    initRenderer();
     runRenderLoop();
-
-    const shaderBaseUrl = "assets/shaders/vertex-color";
-    shader = new Shader(gl, shaderBaseUrl + ".vert", shaderBaseUrl + ".frag",
-        () => {
-            rendererReady = true;
-        });
 }
 
 function initAudio() {
@@ -48,7 +47,7 @@ function initAudio() {
     windowSizeInMs = windowSizeInSeconds * 1000;
 }
 
-function initWebGL() {
+function initRenderer() {
     // get webgl context
     const canvas = document.getElementById("webgl-canvas");
     gl = canvas.getContext("webgl");
@@ -59,6 +58,14 @@ function initWebGL() {
     }
     // set background color to black, fully opaque
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+    const aspectRatio = canvas.width / canvas.height;
+    camera = new PerspectiveCamera(FOV, aspectRatio, NEAR, FAR);
+
+    shader = new Shader(gl, "assets/shaders/vertex-color", () => {
+        // TODO: run renderer loop here
+        rendererReady = true;
+    });
 }
 
 function loadAudioFile(file) {
@@ -189,7 +196,7 @@ function render() {
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     for (const rectangle of rectangles) {
-        rectangle.draw();
+        rectangle.draw(camera.getViewProjectionMatrix());
     }
 }
 
