@@ -57,12 +57,9 @@ function initRenderer() {
 
     camera = new PerspectiveCamera();
 
-    // load shader asynchronously
-    const shaderBaseUrl = "assets/shaders/vertex-color";
-    shader = new Shader(gl, shaderBaseUrl + ".vert", shaderBaseUrl + ".frag",
-        () => {
-            rendererReady = true;
-        });
+    shader = new Shader(gl, "assets/shaders/vertex-color", () => {
+        rendererReady = true;
+    });
 }
 
 function loadAudioFile(file) {
