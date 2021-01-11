@@ -56,6 +56,9 @@ function initRenderer() {
     }
     // set background color to black, fully opaque
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    // enable depth testing: important for 3D so back faces do not overdraw front faces
+    gl.enable(gl.DEPTH_TEST);
+    gl.depthFunc(gl.LESS);
 
     const aspectRatio = canvas.width / canvas.height;
     camera = new PerspectiveCamera(FOV, aspectRatio, NEAR, FAR);
@@ -175,14 +178,13 @@ function runRenderLoop() {
 }
 
 function render() {
-    // clear color buffer with specified background color
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    // clear color buffer with specified background color and clear depth buffer
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     if (spectrumVisualization) {
         spectrumVisualization.draw(camera.getViewProjectionMatrix());
     }
     if (testCuboid) {
-        gl.disable(gl.CULL_FACE);
         // small hack to let cuboid rotate
         const viewProjectionMatrix = camera.getViewProjectionMatrix();
         const matrix = glMatrix.mat4.create();
