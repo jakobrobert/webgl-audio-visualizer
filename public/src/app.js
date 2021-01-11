@@ -6,6 +6,9 @@ const FOV = 45.0;
 const NEAR = 0.1;
 const FAR = 100.0;
 
+const GREEN = [0.0, 1.0, 0.0];
+const RED = [1.0, 0.0, 0.0];
+
 let audioCtx;
 let analyzer;
 let audioBuffer;
@@ -68,14 +71,14 @@ function initRenderer() {
     camera = new PerspectiveCamera(FOV, aspectRatio, NEAR, FAR);
 
     shader2D = new Shader(gl, "assets/shaders/vertex-color-2d", () => {
-        spectrumVisualization = new SpectrumVisualization2D();
+        spectrumVisualization = new SpectrumVisualization2D(GREEN, RED);
         spectrumVisualization.init(gl, shader2D);
     });
 }
 
 function createTestCuboid() {
     shader3D = new Shader(gl, "assets/shaders/vertex-color-3d", () => {
-        testCuboid = new Cuboid([0.0, 1.0, 0.0], [1.0, 0.0, 0.0]);
+        testCuboid = new Cuboid(GREEN, RED);
         testCuboid.init(gl, shader3D);
     });
 }
@@ -150,27 +153,15 @@ function update() {
     }
     updateTime();
     analyzer.getByteFrequencyData(frequencyDomainData);
-    updateSpectrumChart();
+    if (spectrumVisualization) {
+        spectrumVisualization.update(frequencyDomainData);
+    }
 }
 
 function updateTime() {
     const currTime = audioPlayer.getCurrentTime();
     document.getElementById("time").textContent = getTimeString(currTime);
     document.getElementById("duration").textContent = getTimeString(audioBuffer.duration);
-}
-
-function updateSpectrumChart() {
-    if (spectrumVisualization) {
-        spectrumVisualization.update(frequencyDomainData);
-    }
-}
-
-function interpolateColor(startColor, endColor, alpha) {
-    const result = [];
-    result[0] = (1.0 - alpha) * startColor[0] + alpha * endColor[0];
-    result[1] = (1.0 - alpha) * startColor[1] + alpha * endColor[1];
-    result[2] = (1.0 - alpha) * startColor[2] + alpha * endColor[2];
-    return result;
 }
 
 function runRenderLoop() {
