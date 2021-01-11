@@ -79,7 +79,7 @@ function initRenderer() {
 function createTestCuboid() {
     shader3D = new Shader(gl, "assets/shaders/vertex-color-3d", () => {
         const position = [0.0, 0.0, 0.0];
-        const size = [1.0, 1.0, 1.0];
+        const size = [1.5, 1.0, 0.5];
         testCuboid = new Cuboid(position, size, GREEN, RED);
         testCuboid.init(gl, shader3D);
     });
