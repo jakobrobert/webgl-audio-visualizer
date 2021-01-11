@@ -21,6 +21,9 @@ let shader;
 let camera;
 let spectrumVisualization;
 
+// TODO only for testing, remove when 3d visualization is integrated
+let testCuboid;
+
 function init() {
     initAudio();
     initRenderer();
@@ -60,6 +63,11 @@ function initRenderer() {
         spectrumVisualization = new SpectrumVisualization2D();
         spectrumVisualization.init(gl, shader);
     });
+}
+
+function createTestCuboid() {
+    testCuboid = new Cuboid([0.0, 1.0, 0.0], [1.0, 0.0, 0.0]);
+    testCuboid.init(gl, shader);
 }
 
 function loadAudioFile(file) {
@@ -169,6 +177,13 @@ function render() {
 
     if (spectrumVisualization) {
         spectrumVisualization.draw(camera.getViewProjectionMatrix());
+    }
+    if (testCuboid) {
+        // small hack to let cuboid rotate
+        const viewProjectionMatrix = camera.getViewProjectionMatrix();
+        const matrix = glMatrix.mat4.create();
+        glMatrix.mat4.rotateY(matrix, viewProjectionMatrix, performance.now() / 1000.0);
+        testCuboid.draw(matrix);
     }
 }
 

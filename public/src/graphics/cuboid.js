@@ -1,4 +1,4 @@
-class Rectangle {
+class Cuboid {
     // TODO add params position and size
     constructor(bottomColor, topColor) {
         // note: counter-clockwise order always refers to the perspective that the face points towards the camera
