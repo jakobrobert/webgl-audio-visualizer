@@ -19,7 +19,6 @@ let timer;
 let gl;
 let shader;
 let camera;
-let rendererReady = false;
 let spectrumVisualization;
 
 function init() {
@@ -58,8 +57,6 @@ function initRenderer() {
     camera = new PerspectiveCamera(FOV, aspectRatio, NEAR, FAR);
 
     shader = new Shader(gl, "assets/shaders/vertex-color-2d", () => {
-        // TODO: run renderer loop here
-        rendererReady = true;
         spectrumVisualization = new SpectrumVisualization2D();
         spectrumVisualization.init(gl, shader);
     });
@@ -145,10 +142,6 @@ function updateTime() {
 }
 
 function updateSpectrumChart() {
-    if (!rendererReady) {
-        return;
-    }
-
     if (spectrumVisualization) {
         spectrumVisualization.update(frequencyDomainData);
     }
