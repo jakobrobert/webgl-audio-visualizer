@@ -7,17 +7,16 @@ class Rectangle {
         const right = left + size[0];
         const top = bottom + size[1];
 
+        // define vertices in counter-clockwise order
         this.vertices = [
-            // counter-clockwise order
             // position         color
             left, bottom,   bottomColor[0], bottomColor[1], bottomColor[2],
             right, bottom,  bottomColor[0], bottomColor[1], bottomColor[2],
             right, top,     topColor[0],    topColor[1],    topColor[2],
             left, top,      topColor[0],    topColor[1],    topColor[2]
         ];
-
+        // define indices in counter-clockwise order
         this.indices = [
-            // counter-clockwise order
             0, 1, 2,    // right bottom triangle
             2, 3, 0     // left top triangle
         ];
