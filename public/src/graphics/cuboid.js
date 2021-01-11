@@ -1,23 +1,33 @@
 class Cuboid {
-    // TODO add params position and size
-    constructor(bottomColor, topColor) {
+    constructor(position, size, bottomColor, topColor) {
+        // calculate vertex positions
+        // position refers to left bottom front
+        const left = position[0];
+        const bottom = position[1];
+        const front = position[2];
+        const right = left + size[0];
+        const top = bottom + size[1];
+        const back = front - size[2]; // subtract because left-handed coord system, positive z is towards camera
+
         // note: counter-clockwise order always refers to the perspective that the face points towards the camera
+        // this is why the back face is mirrored
+
         // define vertices in counter-clockwise order
         this.vertices = [
             //      position                         color
             // front face
-            0.0,    0.0,    1.0,    bottomColor[0], bottomColor[1], bottomColor[2], // left bottom
-            1.0,    0.0,    1.0,    bottomColor[0], bottomColor[1], bottomColor[2], // right bottom
-            1.0,    1.0,    1.0,    topColor[0],    topColor[1],    topColor[2],    // right top
-            0.0,    1.0,    1.0,    topColor[0],    topColor[1],    topColor[2],    // left top
+            left,   bottom, front,  bottomColor[0], bottomColor[1], bottomColor[2], // left bottom
+            right,  bottom, front,  bottomColor[0], bottomColor[1], bottomColor[2], // right bottom
+            right,  top,    front,  topColor[0],    topColor[1],    topColor[2],    // right top
+            left,   top,    front,  topColor[0],    topColor[1],    topColor[2],    // left top
             // back face
-            1.0,    0.0,    0.0,    bottomColor[0], bottomColor[1], bottomColor[2], // left bottom
-            0.0,    0.0,    0.0,    bottomColor[0], bottomColor[1], bottomColor[2], // right bottom
-            0.0,    1.0,    0.0,    topColor[0],    topColor[1],    topColor[2],    // right top
-            1.0,    1.0,    0.0,    topColor[0],    topColor[1],    topColor[2],    // left top
+            right,  bottom, back,   bottomColor[0], bottomColor[1], bottomColor[2], // left bottom
+            left,   bottom, back,   bottomColor[0], bottomColor[1], bottomColor[2], // right bottom
+            left,   top,    back,   topColor[0],    topColor[1],    topColor[2],    // right top
+            right,  top,    back,   topColor[0],    topColor[1],    topColor[2],    // left top
         ];
         // define indices for the different faces in counter-clockwise order
-        // each face is a quad, so it consists of two triangles
+        // each face is a quad, so it consists of 2 triangles = 6 indices
         this.indices = [
             0, 1, 2, 2, 3, 0,   // front
             1, 4, 7, 7, 2, 1,   // right
