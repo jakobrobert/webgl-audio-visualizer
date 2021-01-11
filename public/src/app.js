@@ -17,8 +17,9 @@ let windowSizeInMs;
 let timer;
 
 let gl;
-let shader;
 let camera;
+let shader2D;
+let shader3D;
 let spectrumVisualization;
 
 // TODO only for testing, remove when 3d visualization is integrated
@@ -59,15 +60,17 @@ function initRenderer() {
     const aspectRatio = canvas.width / canvas.height;
     camera = new PerspectiveCamera(FOV, aspectRatio, NEAR, FAR);
 
-    shader = new Shader(gl, "assets/shaders/vertex-color-2d", () => {
+    shader2D = new Shader(gl, "assets/shaders/vertex-color-2d", () => {
         spectrumVisualization = new SpectrumVisualization2D();
-        spectrumVisualization.init(gl, shader);
+        spectrumVisualization.init(gl, shader2D);
     });
 }
 
 function createTestCuboid() {
-    testCuboid = new Cuboid([0.0, 1.0, 0.0], [1.0, 0.0, 0.0]);
-    testCuboid.init(gl, shader);
+    shader3D = new Shader(gl, "assets/shaders/vertex-color-3d", () => {
+        testCuboid = new Cuboid([0.0, 1.0, 0.0], [1.0, 0.0, 0.0]);
+        testCuboid.init(gl, shader3D);
+    });
 }
 
 function loadAudioFile(file) {
@@ -179,6 +182,7 @@ function render() {
         spectrumVisualization.draw(camera.getViewProjectionMatrix());
     }
     if (testCuboid) {
+        gl.disable(gl.CULL_FACE);
         // small hack to let cuboid rotate
         const viewProjectionMatrix = camera.getViewProjectionMatrix();
         const matrix = glMatrix.mat4.create();
