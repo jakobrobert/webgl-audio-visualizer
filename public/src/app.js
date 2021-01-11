@@ -2,9 +2,6 @@ const MIN_DECIBELS = -70.0;
 const MAX_DECIBELS = -20.0;
 const WINDOW_SIZE = 256;
 
-const GREEN = [0.0, 1.0, 0.0];
-const RED = [1.0, 0.0, 0.0];
-
 const FOV = 45.0;
 const NEAR = 0.1;
 const FAR = 100.0;
@@ -16,16 +13,14 @@ let audioPlayer;
 let playing;
 
 let frequencyDomainData;
-
 let windowSizeInMs;
-
 let timer;
 
 let gl;
 let shader;
-let rendererReady = false;
-let rectangles = [];
 let camera;
+let rendererReady = false;
+let spectrumVisualization;
 
 function init() {
     initAudio();
@@ -65,6 +60,8 @@ function initRenderer() {
     shader = new Shader(gl, "assets/shaders/vertex-color-2d", () => {
         // TODO: run renderer loop here
         rendererReady = true;
+        spectrumVisualization = new SpectrumVisualization2D();
+        spectrumVisualization.init(gl, shader);
     });
 }
 
@@ -152,26 +149,8 @@ function updateSpectrumChart() {
         return;
     }
 
-    // remove old rectangles
-    for (const rectangle of rectangles) {
-        rectangle.destroy();
-    }
-    rectangles = [];
-
-    // width of each segment (in normalized coords, whole viewport has a size of 2 x 2)
-    const width = 2.0 / frequencyDomainData.length;
-    // start with bottom left corner of viewport
-    let x = -1.0;
-    const y = -1.0;
-
-    for (const value of frequencyDomainData) {
-        const normalizedValue = value / 255.0;
-        const height = 2.0 * normalizedValue;
-        const topColor = interpolateColor(GREEN, RED, normalizedValue);
-        const rectangle = new Rectangle([x, y], [width, height], GREEN, topColor);
-        rectangle.init(gl, shader);
-        rectangles.push(rectangle);
-        x += width;
+    if (spectrumVisualization) {
+        spectrumVisualization.update(frequencyDomainData);
     }
 }
 
@@ -195,8 +174,8 @@ function render() {
     // clear color buffer with specified background color
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    for (const rectangle of rectangles) {
-        rectangle.draw(camera.getViewProjectionMatrix());
+    if (spectrumVisualization) {
+        spectrumVisualization.draw(camera.getViewProjectionMatrix());
     }
 }
 
