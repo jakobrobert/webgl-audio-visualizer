@@ -10,10 +10,10 @@ class Rectangle {
         // define vertices in counter-clockwise order
         this.vertices = [
             // position         color
-            left, bottom,   bottomColor[0], bottomColor[1], bottomColor[2],
-            right, bottom,  bottomColor[0], bottomColor[1], bottomColor[2],
-            right, top,     topColor[0],    topColor[1],    topColor[2],
-            left, top,      topColor[0],    topColor[1],    topColor[2]
+            left,   bottom,     bottomColor[0], bottomColor[1], bottomColor[2],
+            right,  bottom,     bottomColor[0], bottomColor[1], bottomColor[2],
+            right,  top,        topColor[0],    topColor[1],    topColor[2],
+            left,   top,        topColor[0],    topColor[1],    topColor[2]
         ];
         // define indices in counter-clockwise order
         this.indices = [
