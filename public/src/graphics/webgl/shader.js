@@ -13,11 +13,11 @@ class Shader {
         });
     }
 
-    bind() {
+    use() {
         this.gl.useProgram(this.program);
     }
 
-    unbind() {
+    unuse() {
         this.gl.useProgram(null);
     }
 

@@ -41,7 +41,7 @@ class Rectangle {
     }
 
     draw(viewProjectionMatrix) {
-        this.shader.bind();
+        this.shader.use();
         this.vertexBuffer.bind();
         this.indexBuffer.bind();
         this.vertexLayout.enableAttributes();
@@ -49,7 +49,7 @@ class Rectangle {
         this.gl.uniformMatrix4fv(this.viewProjectionMatrixLocation, false, viewProjectionMatrix);
         this.gl.drawElements(this.gl.TRIANGLES, this.indices.length, this.gl.UNSIGNED_SHORT, 0);
 
-        this.shader.unbind();
+        this.shader.unuse();
         this.vertexBuffer.unbind();
         this.indexBuffer.unbind();
         this.vertexLayout.disableAttributes();
