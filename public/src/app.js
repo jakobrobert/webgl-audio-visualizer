@@ -56,9 +56,13 @@ function initRenderer() {
     }
     // set background color to black, fully opaque
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
-    // enable depth testing: important for 3D so back faces do not overdraw front faces
+    // enable depth testing so back faces do not overdraw front faces
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LESS);
+    // enable face culling so back faces are discarded for efficiency
+    gl.enable(gl.CULL_FACE);
+    gl.cullFace(gl.BACK);
+    gl.frontFace(gl.CCW); // front faces are in counter-clockwise order
 
     const aspectRatio = canvas.width / canvas.height;
     camera = new PerspectiveCamera(FOV, aspectRatio, NEAR, FAR);
