@@ -2,12 +2,12 @@ const MIN_DECIBELS = -70.0;
 const MAX_DECIBELS = -20.0;
 const WINDOW_SIZE = 256;
 
-const GREEN = [0.0, 1.0, 0.0];
-const RED = [1.0, 0.0, 0.0];
-
 const FOV = 45.0;
 const NEAR = 0.1;
 const FAR = 100.0;
+
+const GREEN = [0.0, 1.0, 0.0];
+const RED = [1.0, 0.0, 0.0];
 
 let audioCtx;
 let analyzer;
@@ -16,16 +16,17 @@ let audioPlayer;
 let playing;
 
 let frequencyDomainData;
-
 let windowSizeInMs;
-
 let timer;
 
 let gl;
-let shader;
-let rendererReady = false;
-let rectangles = [];
 let camera;
+let shader2D;
+let shader3D;
+let spectrumVisualization;
+
+// TODO only for testing, remove when 3d visualization is integrated
+let testCuboid;
 
 function init() {
     initAudio();
@@ -58,13 +59,29 @@ function initRenderer() {
     }
     // set background color to black, fully opaque
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    // enable depth testing so back faces do not overdraw front faces
+    gl.enable(gl.DEPTH_TEST);
+    gl.depthFunc(gl.LESS);
+    // enable face culling so back faces are discarded for efficiency
+    gl.enable(gl.CULL_FACE);
+    gl.cullFace(gl.BACK);
+    gl.frontFace(gl.CCW); // front faces are in counter-clockwise order
 
     const aspectRatio = canvas.width / canvas.height;
     camera = new PerspectiveCamera(FOV, aspectRatio, NEAR, FAR);
 
-    shader = new Shader(gl, "assets/shaders/vertex-color", () => {
-        // TODO: run renderer loop here
-        rendererReady = true;
+    shader2D = new Shader(gl, "assets/shaders/vertex-color-2d", () => {
+        spectrumVisualization = new SpectrumVisualization2D(GREEN, RED);
+        spectrumVisualization.init(gl, shader2D);
+    });
+}
+
+function createTestCuboid() {
+    shader3D = new Shader(gl, "assets/shaders/vertex-color-3d", () => {
+        const position = [0.0, 0.0, 0.0];
+        const size = [1.5, 1.0, 0.5];
+        testCuboid = new Cuboid(position, size, GREEN, RED);
+        testCuboid.init(gl, shader3D);
     });
 }
 
@@ -138,49 +155,15 @@ function update() {
     }
     updateTime();
     analyzer.getByteFrequencyData(frequencyDomainData);
-    updateSpectrumChart();
+    if (spectrumVisualization) {
+        spectrumVisualization.update(frequencyDomainData);
+    }
 }
 
 function updateTime() {
     const currTime = audioPlayer.getCurrentTime();
     document.getElementById("time").textContent = getTimeString(currTime);
     document.getElementById("duration").textContent = getTimeString(audioBuffer.duration);
-}
-
-function updateSpectrumChart() {
-    if (!rendererReady) {
-        return;
-    }
-
-    // remove old rectangles
-    for (const rectangle of rectangles) {
-        rectangle.destroy();
-    }
-    rectangles = [];
-
-    // width of each segment (in normalized coords, whole viewport has a size of 2 x 2)
-    const width = 2.0 / frequencyDomainData.length;
-    // start with bottom left corner of viewport
-    let x = -1.0;
-    const y = -1.0;
-
-    for (const value of frequencyDomainData) {
-        const normalizedValue = value / 255.0;
-        const height = 2.0 * normalizedValue;
-        const topColor = interpolateColor(GREEN, RED, normalizedValue);
-        const rectangle = new Rectangle([x, y], [width, height], GREEN, topColor);
-        rectangle.init(gl, shader);
-        rectangles.push(rectangle);
-        x += width;
-    }
-}
-
-function interpolateColor(startColor, endColor, alpha) {
-    const result = [];
-    result[0] = (1.0 - alpha) * startColor[0] + alpha * endColor[0];
-    result[1] = (1.0 - alpha) * startColor[1] + alpha * endColor[1];
-    result[2] = (1.0 - alpha) * startColor[2] + alpha * endColor[2];
-    return result;
 }
 
 function runRenderLoop() {
@@ -192,11 +175,18 @@ function runRenderLoop() {
 }
 
 function render() {
-    // clear color buffer with specified background color
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    // clear color buffer with specified background color and clear depth buffer
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    for (const rectangle of rectangles) {
-        rectangle.draw(camera.getViewProjectionMatrix());
+    if (spectrumVisualization) {
+        spectrumVisualization.draw(camera.getViewProjectionMatrix());
+    }
+    if (testCuboid) {
+        // small hack to let cuboid rotate
+        const viewProjectionMatrix = camera.getViewProjectionMatrix();
+        const matrix = glMatrix.mat4.create();
+        glMatrix.mat4.rotateY(matrix, viewProjectionMatrix, performance.now() / 1000.0);
+        testCuboid.draw(matrix);
     }
 }
 
