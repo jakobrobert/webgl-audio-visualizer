@@ -21,9 +21,12 @@ let timer;
 
 let gl;
 let camera;
+let rendererInitialized = false;
+
 let shader2D;
 let shader3D;
-let spectrumVisualization;
+
+let visualization;
 
 // TODO only for testing, remove when 3d visualization is integrated
 let testCuboid;
@@ -32,6 +35,31 @@ function init() {
     initAudio();
     initRenderer();
     runRenderLoop();
+}
+
+function onVisualizationTypeChanged(visualizationType) {
+    if (visualizationType === "2d") {
+        createSpectrumVisualization2D();
+    } else if (visualizationType === "3d") {
+        createSpectrumVisualization3D();
+    } else {
+        // error should never happen, must be programming error
+        throw new Error("Invalid visualization type!");
+    }
+}
+
+async function playOrPause() {
+    if (!audioPlayer) {
+        return;
+    }
+    await audioPlayer.playOrPause();
+}
+
+async function stop() {
+    if (!audioPlayer) {
+        return;
+    }
+    await audioPlayer.stop();
 }
 
 function initAudio() {
@@ -70,19 +98,7 @@ function initRenderer() {
     const aspectRatio = canvas.width / canvas.height;
     camera = new PerspectiveCamera(FOV, aspectRatio, NEAR, FAR);
 
-    shader2D = new Shader(gl, "assets/shaders/vertex-color-2d", () => {
-        spectrumVisualization = new SpectrumVisualization2D(GREEN, RED);
-        spectrumVisualization.init(gl, shader2D);
-    });
-}
-
-function createTestCuboid() {
-    shader3D = new Shader(gl, "assets/shaders/vertex-color-3d", () => {
-        const position = [0.0, 0.0, 0.0];
-        const size = [1.5, 1.0, 0.5];
-        testCuboid = new Cuboid(position, size, GREEN, RED);
-        testCuboid.init(gl, shader3D);
-    });
+    rendererInitialized = true;
 }
 
 function loadAudioFile(file) {
@@ -103,18 +119,29 @@ function loadAudioFile(file) {
     reader.readAsArrayBuffer(file);
 }
 
-async function playOrPause() {
-    if (!audioPlayer) {
-        return;
+function createSpectrumVisualization2D() {
+    if (!rendererInitialized) {
+        alert("Renderer is not initialized yet!");
     }
-    await audioPlayer.playOrPause();
+    // TODO: move shader loading initialization of renderer, load all shaders directly
+    shader2D = new Shader(gl, "assets/shaders/vertex-color-2d", () => {
+        visualization = new SpectrumVisualization2D(GREEN, RED);
+        visualization.init(gl, shader2D);
+    });
 }
 
-async function stop() {
-    if (!audioPlayer) {
-        return;
+function createSpectrumVisualization3D() {
+    if (!rendererInitialized) {
+        alert("Renderer is not initialized yet!");
     }
-    await audioPlayer.stop();
+    // TODO: move shader loading initialization of renderer, load all shaders directly
+    // TODO cuboid is a dummy, replace by proper visualization
+    shader3D = new Shader(gl, "assets/shaders/vertex-color-3d", () => {
+        const position = [0.0, 0.0, 0.0];
+        const size = [1.5, 1.0, 0.5];
+        testCuboid = new Cuboid(position, size, GREEN, RED);
+        testCuboid.init(gl, shader3D);
+    });
 }
 
 function onStart() {
@@ -155,8 +182,8 @@ function update() {
     }
     updateTime();
     analyzer.getByteFrequencyData(frequencyDomainData);
-    if (spectrumVisualization) {
-        spectrumVisualization.update(frequencyDomainData);
+    if (visualization) {
+        visualization.update(frequencyDomainData);
     }
 }
 
@@ -178,8 +205,8 @@ function render() {
     // clear color buffer with specified background color and clear depth buffer
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    if (spectrumVisualization) {
-        spectrumVisualization.draw(camera.getViewProjectionMatrix());
+    if (visualization) {
+        visualization.draw(camera.getViewProjectionMatrix());
     }
     if (testCuboid) {
         // small hack to let cuboid rotate

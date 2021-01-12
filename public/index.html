@@ -15,12 +15,18 @@
         <label id="status">No file selected</label>
     </div>
     <div>
+        <label>Visualization type:</label>
+        <input type="radio" id="visualization-2d" name="visualization-type" value="2d"
+               onchange="onVisualizationTypeChanged(this.value)">
+        <label for="visualization-2d">2D</label>
+        <input type="radio" id="visualization-3d" name="visualization-type" value="3d"
+               onchange="onVisualizationTypeChanged(this.value)">
+        <label for="visualization-3d">3D</label>
+    </div>
+    <div>
         <input type="button" id="btn-play-pause" value="Play" onclick="playOrPause()">
         <input type="button" value="Stop" onclick="stop()">
         <label id="time">00:00</label> / <label id="duration">--:--</label>
-    </div>
-    <div>
-        <input type="button" value="Create test cuboid" onclick="createTestCuboid()">
     </div>
     <div>
         <canvas id="webgl-canvas" width="400" height="400"></canvas>
