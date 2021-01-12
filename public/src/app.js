@@ -98,8 +98,8 @@ function initRenderer() {
     const aspectRatio = canvas.width / canvas.height;
     camera = new PerspectiveCamera(FOV, aspectRatio, NEAR, FAR);
 
-    shader2D = new Shader(gl, "assets/shaders/vertex-color-2d", () => {
-        shader3D = new Shader(gl, "assets/shaders/vertex-color-3d", () => {
+    shader2D = new Shader(gl, "assets/shaders/shader-2d", () => {
+        shader3D = new Shader(gl, "assets/shaders/shader-3d", () => {
             rendererInitialized = true;
         });
     });
