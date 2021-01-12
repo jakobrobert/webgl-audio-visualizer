@@ -8,6 +8,7 @@ const FAR = 100.0;
 
 const GREEN = [0.0, 1.0, 0.0];
 const RED = [1.0, 0.0, 0.0];
+const DEPTH_3D_VISUALIZATION = 0.5;
 
 let audioCtx;
 let analyzer;
@@ -21,17 +22,42 @@ let timer;
 
 let gl;
 let camera;
+let rendererInitialized = false;
+
 let shader2D;
 let shader3D;
-let spectrumVisualization;
 
-// TODO only for testing, remove when 3d visualization is integrated
-let testCuboid;
+let visualization;
 
 function init() {
     initAudio();
     initRenderer();
     runRenderLoop();
+}
+
+function onVisualizationTypeChanged(visualizationType) {
+    if (visualizationType === "2d") {
+        createSpectrumVisualization2D();
+    } else if (visualizationType === "3d") {
+        createSpectrumVisualization3D();
+    } else {
+        // error should never happen, must be programming error
+        throw new Error("Invalid visualization type!");
+    }
+}
+
+async function playOrPause() {
+    if (!audioPlayer) {
+        return;
+    }
+    await audioPlayer.playOrPause();
+}
+
+async function stop() {
+    if (!audioPlayer) {
+        return;
+    }
+    await audioPlayer.stop();
 }
 
 function initAudio() {
@@ -70,18 +96,10 @@ function initRenderer() {
     const aspectRatio = canvas.width / canvas.height;
     camera = new PerspectiveCamera(FOV, aspectRatio, NEAR, FAR);
 
-    shader2D = new Shader(gl, "assets/shaders/vertex-color-2d", () => {
-        spectrumVisualization = new SpectrumVisualization2D(GREEN, RED);
-        spectrumVisualization.init(gl, shader2D);
-    });
-}
-
-function createTestCuboid() {
-    shader3D = new Shader(gl, "assets/shaders/vertex-color-3d", () => {
-        const position = [0.0, 0.0, 0.0];
-        const size = [1.5, 1.0, 0.5];
-        testCuboid = new Cuboid(position, size, GREEN, RED);
-        testCuboid.init(gl, shader3D);
+    shader2D = new Shader(gl, "assets/shaders/shader-2d", () => {
+        shader3D = new Shader(gl, "assets/shaders/shader-3d", () => {
+            rendererInitialized = true;
+        });
     });
 }
 
@@ -103,18 +121,28 @@ function loadAudioFile(file) {
     reader.readAsArrayBuffer(file);
 }
 
-async function playOrPause() {
-    if (!audioPlayer) {
-        return;
+function createSpectrumVisualization2D() {
+    if (!rendererInitialized) {
+        alert("Renderer is not initialized yet!");
     }
-    await audioPlayer.playOrPause();
+    // destroy old visualization to avoid memory leaks
+    if (visualization) {
+        visualization.destroy();
+    }
+    visualization = new SpectrumVisualization2D(GREEN, RED);
+    visualization.init(gl, shader2D);
 }
 
-async function stop() {
-    if (!audioPlayer) {
-        return;
+function createSpectrumVisualization3D() {
+    if (!rendererInitialized) {
+        alert("Renderer is not initialized yet!");
     }
-    await audioPlayer.stop();
+    // destroy old visualization to avoid memory leaks
+    if (visualization) {
+        visualization.destroy();
+    }
+    visualization = new SpectrumVisualization3D(DEPTH_3D_VISUALIZATION, GREEN, RED);
+    visualization.init(gl, shader3D);
 }
 
 function onStart() {
@@ -155,8 +183,8 @@ function update() {
     }
     updateTime();
     analyzer.getByteFrequencyData(frequencyDomainData);
-    if (spectrumVisualization) {
-        spectrumVisualization.update(frequencyDomainData);
+    if (visualization) {
+        visualization.update(frequencyDomainData);
     }
 }
 
@@ -178,15 +206,8 @@ function render() {
     // clear color buffer with specified background color and clear depth buffer
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    if (spectrumVisualization) {
-        spectrumVisualization.draw(camera.getViewProjectionMatrix());
-    }
-    if (testCuboid) {
-        // small hack to let cuboid rotate
-        const viewProjectionMatrix = camera.getViewProjectionMatrix();
-        const matrix = glMatrix.mat4.create();
-        glMatrix.mat4.rotateY(matrix, viewProjectionMatrix, performance.now() / 1000.0);
-        testCuboid.draw(matrix);
+    if (visualization) {
+        visualization.draw(camera.getViewProjectionMatrix());
     }
 }
 
