@@ -125,6 +125,10 @@ function createSpectrumVisualization2D() {
     }
     // TODO: move shader loading initialization of renderer, load all shaders directly
     shader2D = new Shader(gl, "assets/shaders/vertex-color-2d", () => {
+        // destroy old visualization to avoid memory leaks
+        if (visualization) {
+            visualization.destroy();
+        }
         visualization = new SpectrumVisualization2D(GREEN, RED);
         visualization.init(gl, shader2D);
     });
@@ -137,10 +141,14 @@ function createSpectrumVisualization3D() {
     // TODO: move shader loading initialization of renderer, load all shaders directly
     // TODO cuboid is a dummy, replace by proper visualization
     shader3D = new Shader(gl, "assets/shaders/vertex-color-3d", () => {
+        // destroy old visualization to avoid memory leaks
+        if (visualization) {
+            visualization.destroy();
+        }
         const position = [0.0, 0.0, 0.0];
         const size = [1.5, 1.0, 0.5];
-        testCuboid = new Cuboid(position, size, GREEN, RED);
-        testCuboid.init(gl, shader3D);
+        visualization = new Cuboid(position, size, GREEN, RED);
+        visualization.init(gl, shader3D);
     });
 }
 
@@ -207,13 +215,6 @@ function render() {
 
     if (visualization) {
         visualization.draw(camera.getViewProjectionMatrix());
-    }
-    if (testCuboid) {
-        // small hack to let cuboid rotate
-        const viewProjectionMatrix = camera.getViewProjectionMatrix();
-        const matrix = glMatrix.mat4.create();
-        glMatrix.mat4.rotateY(matrix, viewProjectionMatrix, performance.now() / 1000.0);
-        testCuboid.draw(matrix);
     }
 }
 
