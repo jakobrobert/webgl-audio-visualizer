@@ -37,7 +37,7 @@ class SpectrumVisualization3D {
         for (const value of frequencyDomainData) {
             const normalizedValue = value / 255.0;
             const height = 2.0 * normalizedValue;
-            const position = [x, y];
+            const position = [x, y, 0.0];
             const size = [width, height, this.depth];
             const interpolatedColor = this.interpolateColor(this.bottomColor, this.topColor, normalizedValue);
             const cuboid = new Cuboid(position, size, this.bottomColor, interpolatedColor);

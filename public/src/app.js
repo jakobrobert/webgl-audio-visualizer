@@ -8,6 +8,7 @@ const FAR = 100.0;
 
 const GREEN = [0.0, 1.0, 0.0];
 const RED = [1.0, 0.0, 0.0];
+const DEPTH_3D_VISUALIZATION = 0.5;
 
 let audioCtx;
 let analyzer;
@@ -27,9 +28,6 @@ let shader2D;
 let shader3D;
 
 let visualization;
-
-// TODO only for testing, remove when 3d visualization is integrated
-let testCuboid;
 
 function init() {
     initAudio();
@@ -144,9 +142,7 @@ function createSpectrumVisualization3D() {
     if (visualization) {
         visualization.destroy();
     }
-    const position = [0.0, 0.0, 0.0];
-    const size = [1.5, 1.0, 0.5];
-    visualization = new Cuboid(position, size, GREEN, RED);
+    visualization = new SpectrumVisualization3D(DEPTH_3D_VISUALIZATION, GREEN, RED);
     visualization.init(gl, shader3D);
 }
 
