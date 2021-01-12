@@ -137,7 +137,6 @@ function createSpectrumVisualization3D() {
     if (!rendererInitialized) {
         alert("Renderer is not initialized yet!");
     }
-    // TODO cuboid is a dummy, replace by proper visualization
     // destroy old visualization to avoid memory leaks
     if (visualization) {
         visualization.destroy();

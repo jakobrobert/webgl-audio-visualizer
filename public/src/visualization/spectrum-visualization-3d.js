@@ -39,20 +39,11 @@ class SpectrumVisualization3D {
             const height = 2.0 * normalizedValue;
             const position = [x, y, 0.0];
             const size = [width, height, this.depth];
-            const interpolatedColor = this.interpolateColor(this.bottomColor, this.topColor, normalizedValue);
+            const interpolatedColor = GraphicsUtils.interpolateColor(this.bottomColor, this.topColor, normalizedValue);
             const cuboid = new Cuboid(position, size, this.bottomColor, interpolatedColor);
             cuboid.init(this.gl, this.shader);
             this.cuboids.push(cuboid);
             x += width;
         }
-    }
-
-    // TODO Duplicated code
-    interpolateColor(startColor, endColor, alpha) {
-        const result = [];
-        result[0] = (1.0 - alpha) * startColor[0] + alpha * endColor[0];
-        result[1] = (1.0 - alpha) * startColor[1] + alpha * endColor[1];
-        result[2] = (1.0 - alpha) * startColor[2] + alpha * endColor[2];
-        return result;
     }
 }
