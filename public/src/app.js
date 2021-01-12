@@ -98,7 +98,11 @@ function initRenderer() {
     const aspectRatio = canvas.width / canvas.height;
     camera = new PerspectiveCamera(FOV, aspectRatio, NEAR, FAR);
 
-    rendererInitialized = true;
+    shader2D = new Shader(gl, "assets/shaders/vertex-color-2d", () => {
+        shader3D = new Shader(gl, "assets/shaders/vertex-color-3d", () => {
+            rendererInitialized = true;
+        });
+    });
 }
 
 function loadAudioFile(file) {
@@ -123,33 +127,27 @@ function createSpectrumVisualization2D() {
     if (!rendererInitialized) {
         alert("Renderer is not initialized yet!");
     }
-    // TODO: move shader loading initialization of renderer, load all shaders directly
-    shader2D = new Shader(gl, "assets/shaders/vertex-color-2d", () => {
-        // destroy old visualization to avoid memory leaks
-        if (visualization) {
-            visualization.destroy();
-        }
-        visualization = new SpectrumVisualization2D(GREEN, RED);
-        visualization.init(gl, shader2D);
-    });
+    // destroy old visualization to avoid memory leaks
+    if (visualization) {
+        visualization.destroy();
+    }
+    visualization = new SpectrumVisualization2D(GREEN, RED);
+    visualization.init(gl, shader2D);
 }
 
 function createSpectrumVisualization3D() {
     if (!rendererInitialized) {
         alert("Renderer is not initialized yet!");
     }
-    // TODO: move shader loading initialization of renderer, load all shaders directly
     // TODO cuboid is a dummy, replace by proper visualization
-    shader3D = new Shader(gl, "assets/shaders/vertex-color-3d", () => {
-        // destroy old visualization to avoid memory leaks
-        if (visualization) {
-            visualization.destroy();
-        }
-        const position = [0.0, 0.0, 0.0];
-        const size = [1.5, 1.0, 0.5];
-        visualization = new Cuboid(position, size, GREEN, RED);
-        visualization.init(gl, shader3D);
-    });
+    // destroy old visualization to avoid memory leaks
+    if (visualization) {
+        visualization.destroy();
+    }
+    const position = [0.0, 0.0, 0.0];
+    const size = [1.5, 1.0, 0.5];
+    visualization = new Cuboid(position, size, GREEN, RED);
+    visualization.init(gl, shader3D);
 }
 
 function onStart() {
