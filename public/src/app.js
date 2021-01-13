@@ -8,7 +8,8 @@ const FAR = 100.0;
 
 const GREEN = [0.0, 1.0, 0.0];
 const RED = [1.0, 0.0, 0.0];
-const DEPTH_3D_VISUALIZATION = 0.5;
+const VISUALIZATION_3D_SIMPLE_DEPTH = 0.5;
+const VISUALIZATION_3D_EXTENDED_DEPTH = 0.01;
 
 let audioCtx;
 let analyzer;
@@ -143,7 +144,7 @@ function createSpectrumVisualization3DSimple() {
     if (visualization) {
         visualization.destroy();
     }
-    visualization = new SpectrumVisualization3DSimple(DEPTH_3D_VISUALIZATION, GREEN, RED);
+    visualization = new SpectrumVisualization3DSimple(VISUALIZATION_3D_SIMPLE_DEPTH, GREEN, RED);
     visualization.init(gl, shader3D);
 }
 
@@ -155,7 +156,7 @@ function createSpectrumVisualization3DExtended() {
     if (visualization) {
         visualization.destroy();
     }
-    visualization = new SpectrumVisualization3DExtended(DEPTH_3D_VISUALIZATION, GREEN, RED);
+    visualization = new SpectrumVisualization3DExtended(VISUALIZATION_3D_EXTENDED_DEPTH, GREEN, RED);
     visualization.init(gl, shader3D);
 }
 
