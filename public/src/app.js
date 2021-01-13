@@ -208,7 +208,7 @@ function update() {
     }
     // TODO: just a hack, should only apply to extended visualization
     cameraZ += VISUALIZATION_3D_EXTENDED_DEPTH;
-    camera = new PerspectiveCamera([cameraZ, 2.0, cameraZ], FOV, 1.0, NEAR, FAR);
+    camera.updateEyePosition([cameraZ, 2.0, cameraZ]);
 }
 
 function updateTime() {
