@@ -11,6 +11,8 @@ const RED = [1.0, 0.0, 0.0];
 const VISUALIZATION_3D_SIMPLE_DEPTH = 0.5;
 const VISUALIZATION_3D_EXTENDED_DEPTH = 0.01;
 
+let cameraZ = 2.0;
+
 let audioCtx;
 let analyzer;
 let audioBuffer;
@@ -97,7 +99,7 @@ function initRenderer() {
     gl.frontFace(gl.CCW); // front faces are in counter-clockwise order
 
     const aspectRatio = canvas.width / canvas.height;
-    camera = new PerspectiveCamera(FOV, aspectRatio, NEAR, FAR);
+    camera = new PerspectiveCamera([1.0, 2.0, 2.0], FOV, aspectRatio, NEAR, FAR);
 
     shader2D = new Shader(gl, "assets/shaders/shader-2d", () => {
         shader3D = new Shader(gl, "assets/shaders/shader-3d", () => {
@@ -158,7 +160,7 @@ function createSpectrumVisualization3DExtended() {
     if (visualization) {
         visualization.destroy();
     }
-    const position = [-1.0, -1.0, -3.0];
+    const position = [-1.0, -1.0, 0.0];
     visualization = new SpectrumVisualization3DExtended(position, VISUALIZATION_3D_EXTENDED_DEPTH, GREEN, RED);
     visualization.init(gl, shader3D);
 }
@@ -204,6 +206,9 @@ function update() {
     if (visualization) {
         visualization.update(frequencyDomainData);
     }
+    // TODO: just a hack, should only apply to extended visualization
+    cameraZ += VISUALIZATION_3D_EXTENDED_DEPTH;
+    camera = new PerspectiveCamera([1.0, 2.0, cameraZ], FOV, 1.0, NEAR, FAR);
 }
 
 function updateTime() {
