@@ -160,7 +160,7 @@ function createSpectrumVisualization3DExtended() {
     if (visualization) {
         visualization.destroy();
     }
-    const position = [-1.0, -1.0, 0.0];
+    const position = [-1.0, -1.0, -1.0];
     visualization = new SpectrumVisualization3DExtended(position, VISUALIZATION_3D_EXTENDED_DEPTH, GREEN, RED);
     visualization.init(gl, shader3D);
 }
@@ -208,7 +208,7 @@ function update() {
     }
     // TODO: just a hack, should only apply to extended visualization
     cameraZ += VISUALIZATION_3D_EXTENDED_DEPTH;
-    camera = new PerspectiveCamera([1.0, 2.0, cameraZ], FOV, 1.0, NEAR, FAR);
+    camera = new PerspectiveCamera([cameraZ, 2.0, cameraZ], FOV, 1.0, NEAR, FAR);
 }
 
 function updateTime() {
