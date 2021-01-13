@@ -1,5 +1,6 @@
 class SpectrumVisualization3DSimple {
-    constructor(depth, bottomColor, topColor) {
+    constructor(position, depth, bottomColor, topColor) {
+        this.position = position;
         this.depth = depth;
         this.bottomColor = bottomColor;
         this.topColor = topColor;
@@ -25,19 +26,22 @@ class SpectrumVisualization3DSimple {
     }
 
     update(frequencyDomainData) {
+        // remove the old visualization
         this.destroy();
 
         // width of each cuboid
         // one cuboid for each frequency bin
         // in normalized coords, whole viewport has a size of 2 x 2
         const width = 2.0 / frequencyDomainData.length;
-        // start with bottom left corner of viewport
-        let x = -1.0;
-        const y = -1.0;
+
+        let x = this.position[0];
+        const y = this.position[1];
+        const z = this.position[2];
+
         for (const value of frequencyDomainData) {
             const normalizedValue = value / 255.0;
             const height = 2.0 * normalizedValue;
-            const position = [x, y, 0.0];
+            const position = [x, y, z];
             const size = [width, height, this.depth];
             const interpolatedColor = GraphicsUtils.interpolateColor(this.bottomColor, this.topColor, normalizedValue);
             const cuboid = new Cuboid(position, size, this.bottomColor, interpolatedColor);

@@ -1,5 +1,6 @@
 class SpectrumVisualization2D {
-    constructor(bottomColor, topColor) {
+    constructor(position, bottomColor, topColor) {
+        this.position = position;
         this.bottomColor = bottomColor;
         this.topColor = topColor;
         this.rectangles = [];
@@ -30,9 +31,10 @@ class SpectrumVisualization2D {
         // one rectangle for each frequency bin
         // in normalized coords, whole viewport has a size of 2 x 2
         const width = 2.0 / frequencyDomainData.length;
-        // start with bottom left corner of viewport
-        let x = -1.0;
-        const y = -1.0;
+
+        let x = this.position[0];
+        const y = this.position[1];
+
         for (const value of frequencyDomainData) {
             const normalizedValue = value / 255.0;
             const height = 2.0 * normalizedValue;

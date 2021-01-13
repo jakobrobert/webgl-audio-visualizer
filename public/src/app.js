@@ -132,7 +132,8 @@ function createSpectrumVisualization2D() {
     if (visualization) {
         visualization.destroy();
     }
-    visualization = new SpectrumVisualization2D(GREEN, RED);
+    const position = [-1.0, -1.0];
+    visualization = new SpectrumVisualization2D(position, GREEN, RED);
     visualization.init(gl, shader2D);
 }
 
@@ -144,7 +145,8 @@ function createSpectrumVisualization3DSimple() {
     if (visualization) {
         visualization.destroy();
     }
-    visualization = new SpectrumVisualization3DSimple(VISUALIZATION_3D_SIMPLE_DEPTH, GREEN, RED);
+    const position = [-1.0, -1.0, 0.0];
+    visualization = new SpectrumVisualization3DSimple(position, VISUALIZATION_3D_SIMPLE_DEPTH, GREEN, RED);
     visualization.init(gl, shader3D);
 }
 
@@ -156,7 +158,8 @@ function createSpectrumVisualization3DExtended() {
     if (visualization) {
         visualization.destroy();
     }
-    visualization = new SpectrumVisualization3DExtended(VISUALIZATION_3D_EXTENDED_DEPTH, GREEN, RED);
+    const position = [-1.0, -1.0, -3.0];
+    visualization = new SpectrumVisualization3DExtended(position, VISUALIZATION_3D_EXTENDED_DEPTH, GREEN, RED);
     visualization.init(gl, shader3D);
 }
 
