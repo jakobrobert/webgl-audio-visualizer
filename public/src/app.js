@@ -39,7 +39,9 @@ function onVisualizationTypeChanged(visualizationType) {
     if (visualizationType === "2d") {
         createSpectrumVisualization2D();
     } else if (visualizationType === "3d") {
-        createSpectrumVisualization3D();
+        createSpectrumVisualization3DSimple();
+    } else if (visualizationType === "3d-extended") {
+        createSpectrumVisualization3DExtended();
     } else {
         // error should never happen, must be programming error
         throw new Error("Invalid visualization type!");
@@ -133,7 +135,7 @@ function createSpectrumVisualization2D() {
     visualization.init(gl, shader2D);
 }
 
-function createSpectrumVisualization3D() {
+function createSpectrumVisualization3DSimple() {
     if (!rendererInitialized) {
         alert("Renderer is not initialized yet!");
     }
@@ -141,7 +143,19 @@ function createSpectrumVisualization3D() {
     if (visualization) {
         visualization.destroy();
     }
-    visualization = new SpectrumVisualization3D(DEPTH_3D_VISUALIZATION, GREEN, RED);
+    visualization = new SpectrumVisualization3DSimple(DEPTH_3D_VISUALIZATION, GREEN, RED);
+    visualization.init(gl, shader3D);
+}
+
+function createSpectrumVisualization3DExtended() {
+    if (!rendererInitialized) {
+        alert("Renderer is not initialized yet!");
+    }
+    // destroy old visualization to avoid memory leaks
+    if (visualization) {
+        visualization.destroy();
+    }
+    visualization = new SpectrumVisualization3DExtended(DEPTH_3D_VISUALIZATION, GREEN, RED);
     visualization.init(gl, shader3D);
 }
 

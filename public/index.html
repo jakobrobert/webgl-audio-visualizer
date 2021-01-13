@@ -18,13 +18,16 @@
         <label id="status">No file selected</label>
     </div>
     <div>
-        <label>Visualization type:</label>
+        <label>Visualization Type:</label>
         <input type="radio" id="visualization-2d" name="visualization-type" value="2d"
                onchange="onVisualizationTypeChanged(this.value)">
         <label for="visualization-2d">2D</label>
-        <input type="radio" id="visualization-3d" name="visualization-type" value="3d"
+        <input type="radio" id="visualization-3d-simple" name="visualization-type" value="3d"
                onchange="onVisualizationTypeChanged(this.value)">
-        <label for="visualization-3d">3D</label>
+        <label for="visualization-3d-simple">3D Simple</label>
+        <input type="radio" id="visualization-3d-extended" name="visualization-type" value="3d-extended"
+               onchange="onVisualizationTypeChanged(this.value)">
+        <label for="visualization-3d-extended">3D Extended</label>
     </div>
     <div>
         <input type="button" id="btn-play-pause" value="Play" onclick="playOrPause()">
@@ -39,7 +42,8 @@
     <script src="src/audio-player.js"></script>
 
     <script src="src/visualization/spectrum-visualization-2d.js"></script>
-    <script src="src/visualization/spectrum-visualization-3d.js"></script>
+    <script src="src/visualization/spectrum-visualization-3d-simple.js"></script>
+    <script src="src/visualization/spectrum-visualization-3d-extended.js"></script>
 
     <script src="src/graphics/rectangle.js"></script>
     <script src="src/graphics/cuboid.js"></script>

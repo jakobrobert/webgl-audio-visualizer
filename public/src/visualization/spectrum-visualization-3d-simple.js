@@ -1,4 +1,4 @@
-class SpectrumVisualization3D {
+class SpectrumVisualization3DSimple {
     constructor(depth, bottomColor, topColor) {
         this.depth = depth;
         this.bottomColor = bottomColor;
