@@ -1,11 +1,12 @@
 class SpectrumVisualization3DExtended {
-    constructor(position, depth, bottomColor, topColor) {
+    constructor(position, depth, bottomColor, topColor, camera) {
         this.position = position;
         this.depth = depth;
         this.bottomColor = bottomColor;
         this.topColor = topColor;
         this.cuboids = [];
         this.depthOffset = 0.0;
+        this.camera = camera;
     }
 
     init(gl, shader) {
@@ -50,5 +51,8 @@ class SpectrumVisualization3DExtended {
 
         // increase depth offset for each update, so the visualizations for each update are stacked onto each other
         this.depthOffset += this.depth;
+        // update camera position so the visualization stays inside the viewport
+        // TODO is a bit hacky, needs fine-tuning
+        this.camera.updateEyePosition([this.depthOffset + 2.0, 2.0, this.depthOffset + 2.0]);
     }
 }

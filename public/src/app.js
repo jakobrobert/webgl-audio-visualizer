@@ -161,7 +161,7 @@ function createSpectrumVisualization3DExtended() {
         visualization.destroy();
     }
     const position = [-1.0, -1.0, -1.0];
-    visualization = new SpectrumVisualization3DExtended(position, VISUALIZATION_3D_EXTENDED_DEPTH, GREEN, RED);
+    visualization = new SpectrumVisualization3DExtended(position, VISUALIZATION_3D_EXTENDED_DEPTH, GREEN, RED, camera);
     visualization.init(gl, shader3D);
 }
 
@@ -206,9 +206,6 @@ function update() {
     if (visualization) {
         visualization.update(frequencyDomainData);
     }
-    // TODO: just a hack, should only apply to extended visualization
-    cameraZ += VISUALIZATION_3D_EXTENDED_DEPTH;
-    camera.updateEyePosition([cameraZ, 2.0, cameraZ]);
 }
 
 function updateTime() {
