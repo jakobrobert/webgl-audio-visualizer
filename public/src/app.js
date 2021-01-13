@@ -1,6 +1,6 @@
 const MIN_DECIBELS = -70.0;
 const MAX_DECIBELS = -20.0;
-const WINDOW_SIZE = 256;
+const WINDOW_SIZE = 128;
 
 const FOV = 45.0;
 const NEAR = 0.1;
@@ -8,7 +8,10 @@ const FAR = 100.0;
 
 const GREEN = [0.0, 1.0, 0.0];
 const RED = [1.0, 0.0, 0.0];
-const DEPTH_3D_VISUALIZATION = 0.5;
+const VISUALIZATION_3D_SIMPLE_DEPTH = 0.5;
+const VISUALIZATION_3D_EXTENDED_DEPTH = 0.01;
+
+let cameraZ = 2.0;
 
 let audioCtx;
 let analyzer;
@@ -39,7 +42,9 @@ function onVisualizationTypeChanged(visualizationType) {
     if (visualizationType === "2d") {
         createSpectrumVisualization2D();
     } else if (visualizationType === "3d") {
-        createSpectrumVisualization3D();
+        createSpectrumVisualization3DSimple();
+    } else if (visualizationType === "3d-extended") {
+        createSpectrumVisualization3DExtended();
     } else {
         // error should never happen, must be programming error
         throw new Error("Invalid visualization type!");
@@ -94,7 +99,7 @@ function initRenderer() {
     gl.frontFace(gl.CCW); // front faces are in counter-clockwise order
 
     const aspectRatio = canvas.width / canvas.height;
-    camera = new PerspectiveCamera(FOV, aspectRatio, NEAR, FAR);
+    camera = new PerspectiveCamera([1.0, 2.0, 2.0], FOV, aspectRatio, NEAR, FAR);
 
     shader2D = new Shader(gl, "assets/shaders/shader-2d", () => {
         shader3D = new Shader(gl, "assets/shaders/shader-3d", () => {
@@ -129,11 +134,12 @@ function createSpectrumVisualization2D() {
     if (visualization) {
         visualization.destroy();
     }
-    visualization = new SpectrumVisualization2D(GREEN, RED);
+    const position = [-1.0, -1.0];
+    visualization = new SpectrumVisualization2D(position, GREEN, RED);
     visualization.init(gl, shader2D);
 }
 
-function createSpectrumVisualization3D() {
+function createSpectrumVisualization3DSimple() {
     if (!rendererInitialized) {
         alert("Renderer is not initialized yet!");
     }
@@ -141,7 +147,21 @@ function createSpectrumVisualization3D() {
     if (visualization) {
         visualization.destroy();
     }
-    visualization = new SpectrumVisualization3D(DEPTH_3D_VISUALIZATION, GREEN, RED);
+    const position = [-1.0, -1.0, 0.0];
+    visualization = new SpectrumVisualization3DSimple(position, VISUALIZATION_3D_SIMPLE_DEPTH, GREEN, RED);
+    visualization.init(gl, shader3D);
+}
+
+function createSpectrumVisualization3DExtended() {
+    if (!rendererInitialized) {
+        alert("Renderer is not initialized yet!");
+    }
+    // destroy old visualization to avoid memory leaks
+    if (visualization) {
+        visualization.destroy();
+    }
+    const position = [-1.0, -1.0, -1.0];
+    visualization = new SpectrumVisualization3DExtended(position, VISUALIZATION_3D_EXTENDED_DEPTH, GREEN, RED, camera);
     visualization.init(gl, shader3D);
 }
 
