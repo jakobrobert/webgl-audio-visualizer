@@ -1,6 +1,6 @@
 const MIN_DECIBELS = -70.0;
 const MAX_DECIBELS = -20.0;
-const WINDOW_SIZE = 256;
+const WINDOW_SIZE = 128;
 
 const FOV = 45.0;
 const NEAR = 0.1;
