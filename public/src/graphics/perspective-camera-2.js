@@ -56,8 +56,8 @@ class PerspectiveCamera2 {
         const rotationYMatrix = glMatrix.mat4.create();
         glMatrix.mat4.rotateY(rotationYMatrix, rotationYMatrix, yaw);
 
-        // order is inverted as well, first translation, then rotation
         // multiplication in reverse order, translation is applied first
+        // translate first so rotation is about camera origin, not about world origin
         glMatrix.mat4.multiply(this.viewMatrix, rotationYMatrix, translationMatrix);
     }
 
