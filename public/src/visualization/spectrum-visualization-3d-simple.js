@@ -1,10 +1,16 @@
 class SpectrumVisualization3DSimple {
-    constructor(position, depth, bottomColor, topColor) {
+    constructor(position, depth, bottomColor, topColor, camera) {
         this.position = position;
         this.depth = depth;
         this.bottomColor = bottomColor;
         this.topColor = topColor;
+        this.camera = camera;
+
         this.cuboids = [];
+
+        this.camera.setPosition([2.0, 2.0, 3.0]);
+        this.camera.setYaw(30.0);
+        this.camera.setPitch(-30.0);
     }
 
     init(gl, shader) {
@@ -19,9 +25,9 @@ class SpectrumVisualization3DSimple {
         this.cuboids = [];
     }
 
-    draw(viewProjectionMatrix) {
+    draw() {
         for (const cuboid of this.cuboids) {
-            cuboid.draw(viewProjectionMatrix);
+            cuboid.draw(this.camera.getViewProjectionMatrix());
         }
     }
 
