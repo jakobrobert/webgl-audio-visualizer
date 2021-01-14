@@ -7,9 +7,9 @@ class SpectrumVisualization2D {
 
         this.rectangles = [];
 
-        this.camera.setPosition([2.0, 2.0, 3.0]);
-        this.camera.setYaw(30.0);
-        this.camera.setPitch(-30.0);
+        this.camera.setPosition([0.0, 0.0, 3.0]);
+        this.camera.setYaw(0.0);
+        this.camera.setPitch(0.0);
     }
 
     init(gl, shader) {
