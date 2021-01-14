@@ -53,6 +53,6 @@ class SpectrumVisualization3DExtended {
         this.depthOffset += this.depth;
         // update camera position so the visualization stays inside the viewport
         // TODO is a bit hacky, needs fine-tuning
-        this.camera.updateEyePosition([this.depthOffset + 2.0, 2.0, this.depthOffset + 2.0]);
+        this.camera.setPosition([this.depthOffset + 2.0, 2.0, this.depthOffset + 2.0]);
     }
 }

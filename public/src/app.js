@@ -97,8 +97,7 @@ function initRenderer() {
     gl.frontFace(gl.CCW); // front faces are in counter-clockwise order
 
     const aspectRatio = canvas.width / canvas.height;
-    //camera = new PerspectiveCamera([1.0, 2.0, 2.0], FOV, aspectRatio, NEAR, FAR);
-    camera = new PerspectiveCamera2(FOV, aspectRatio, NEAR, FAR);
+    camera = new PerspectiveCamera(FOV, aspectRatio, NEAR, FAR);
     camera.setPosition([2.0, 2.0, 3.0]);
     camera.setYaw(30.0);
     camera.setPitch(-30.0);
