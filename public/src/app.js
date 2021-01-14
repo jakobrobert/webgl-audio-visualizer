@@ -158,7 +158,7 @@ function createSpectrumVisualization3DExtended() {
     if (visualization) {
         visualization.destroy();
     }
-    const position = [-1.0, -1.0, -1.0];
+    const position = [-1.0, -1.0, 0.0];
     visualization = new SpectrumVisualization3DExtended(position, VISUALIZATION_3D_EXTENDED_DEPTH, GREEN, RED, camera);
     visualization.init(gl, shader3D);
 }
