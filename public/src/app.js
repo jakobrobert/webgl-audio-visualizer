@@ -11,8 +11,6 @@ const RED = [1.0, 0.0, 0.0];
 const VISUALIZATION_3D_SIMPLE_DEPTH = 0.5;
 const VISUALIZATION_3D_EXTENDED_DEPTH = 0.01;
 
-let cameraZ = 2.0;
-
 let audioCtx;
 let analyzer;
 let audioBuffer;
