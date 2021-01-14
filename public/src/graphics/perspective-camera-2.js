@@ -49,16 +49,19 @@ class PerspectiveCamera2 {
         glMatrix.mat4.translate(translationMatrix, translationMatrix, translation);
 
         // calculate rotation matrix for pitch = rotation about x-axis
-        // TODO add x rotation
+        const pitch = glMatrix.glMatrix.toRadian(-this.pitchInDegrees);
+        const rotationXMatrix = glMatrix.mat4.create();
+        glMatrix.mat4.rotateX(rotationXMatrix, rotationXMatrix, pitch);
 
         // calculate rotation matrix for yaw = rotation about y-axis
         const yaw = glMatrix.glMatrix.toRadian(-this.yawInDegrees);
         const rotationYMatrix = glMatrix.mat4.create();
         glMatrix.mat4.rotateY(rotationYMatrix, rotationYMatrix, yaw);
 
-        // multiplication in reverse order, translation is applied first
+        // multiplication in reverse order: translation is applied first, then y rotation, then x rotation
         // translate first so rotation is about camera origin, not about world origin
-        glMatrix.mat4.multiply(this.viewMatrix, rotationYMatrix, translationMatrix);
+        glMatrix.mat4.multiply(this.viewMatrix, rotationXMatrix, rotationYMatrix);
+        glMatrix.mat4.multiply(this.viewMatrix, this.viewMatrix, translationMatrix);
     }
 
     updateViewProjectionMatrix() {
