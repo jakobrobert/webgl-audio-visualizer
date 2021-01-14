@@ -99,7 +99,8 @@ function initRenderer() {
     const aspectRatio = canvas.width / canvas.height;
     //camera = new PerspectiveCamera([1.0, 2.0, 2.0], FOV, aspectRatio, NEAR, FAR);
     camera = new PerspectiveCamera2(FOV, aspectRatio, NEAR, FAR);
-    camera.setPosition([0.5, -0.5, 3.0]);
+    camera.setPosition([2.0, -0.5, 3.0]);
+    camera.setYaw(30.0);
 
     shader2D = new Shader(gl, "assets/shaders/shader-2d", () => {
         shader3D = new Shader(gl, "assets/shaders/shader-3d", () => {
