@@ -34,6 +34,17 @@ class SpectrumVisualization3DExtended {
     }
 
     update(frequencyDomainData) {
+        const newCuboids = this.createCuboids(frequencyDomainData);
+        this.initCuboids(newCuboids);
+        this.cuboids.push(...newCuboids);
+        this.updateCamera();
+    }
+
+    createCuboids(frequencyDomainData) {
+        const cuboids = [];
+
+        const startTime = performance.now();
+
         // width of each cuboid
         // one cuboid for each frequency bin
         // in normalized coords, whole viewport has a size of 2 x 2
@@ -50,14 +61,29 @@ class SpectrumVisualization3DExtended {
             const size = [width, height, this.depth];
             const interpolatedColor = GraphicsUtils.interpolateColor(this.bottomColor, this.topColor, normalizedValue);
             const cuboid = new Cuboid(position, size, this.bottomColor, interpolatedColor);
-            cuboid.init(this.gl, this.shader);
-            this.cuboids.push(cuboid);
+            cuboids.push(cuboid);
             x += width;
         }
 
         // increase depth offset for each update, so the visualizations for each update are stacked onto each other
         this.depthOffset += this.depth;
 
+        const elapsedTime = performance.now() - startTime;
+        console.log("Create " + cuboids.length + " cuboids in " + elapsedTime + " ms");
+
+        return cuboids;
+    }
+
+    initCuboids(cuboids) {
+        const startTime = performance.now();
+        for (const cuboid of cuboids) {
+            cuboid.init(this.gl, this.shader);
+        }
+        const elapsedTime = performance.now() - startTime;
+        console.log("Init " + cuboids.length + " cuboids in " + elapsedTime + " ms");
+    }
+
+    updateCamera() {
         // update camera position so the visualization stays inside the viewport
         // move it along the positive z-axis just as the visualization
         const cameraX = this.cameraStartPosition[0];

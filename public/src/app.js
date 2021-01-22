@@ -11,6 +11,8 @@ const RED = [1.0, 0.0, 0.0];
 const VISUALIZATION_3D_SIMPLE_DEPTH = 0.5;
 const VISUALIZATION_3D_EXTENDED_DEPTH = 0.01;
 
+const FPS_MEASUREMENT_INTERVAL = 500.0;
+
 let audioCtx;
 let analyzer;
 let audioBuffer;
@@ -213,8 +215,23 @@ function updateTime() {
 }
 
 function runRenderLoop() {
+    let oldTime = performance.now();
+    let frameCount = 0;
     const loop = () => {
         render();
+        // measure frame time
+        const currTime = performance.now();
+        const elapsedTime = currTime - oldTime;
+        if (elapsedTime >= FPS_MEASUREMENT_INTERVAL) {
+            const frameTime = elapsedTime / frameCount;
+            const fps = 1000.0 / frameTime;
+            const fpsMessage = "FPS: " + fps.toFixed(1);
+            const frameTimeMessage = "Frametime: " + frameTime.toFixed(1) + " ms";
+            console.log(fpsMessage + ", " + frameTimeMessage);
+            oldTime = currTime;
+            frameCount = 0;
+        }
+        frameCount++;
         requestAnimationFrame(loop);
     };
     requestAnimationFrame(loop);

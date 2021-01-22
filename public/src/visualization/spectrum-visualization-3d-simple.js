@@ -32,8 +32,16 @@ class SpectrumVisualization3DSimple {
     }
 
     update(frequencyDomainData) {
-        // remove the old visualization
-        this.destroy();
+        this.destroy(); // remove the old visualization
+        const newCuboids = this.createCuboids(frequencyDomainData);
+        this.initCuboids(newCuboids);
+        this.cuboids = newCuboids;
+    }
+
+    createCuboids(frequencyDomainData) {
+        const cuboids = [];
+
+        const startTime = performance.now();
 
         // width of each cuboid
         // one cuboid for each frequency bin
@@ -51,9 +59,22 @@ class SpectrumVisualization3DSimple {
             const size = [width, height, this.depth];
             const interpolatedColor = GraphicsUtils.interpolateColor(this.bottomColor, this.topColor, normalizedValue);
             const cuboid = new Cuboid(position, size, this.bottomColor, interpolatedColor);
-            cuboid.init(this.gl, this.shader);
-            this.cuboids.push(cuboid);
+            cuboids.push(cuboid);
             x += width;
         }
+
+        const elapsedTime = performance.now() - startTime;
+        console.log("Create " + cuboids.length + " cuboids in " + elapsedTime + " ms");
+
+        return cuboids;
+    }
+
+    initCuboids(cuboids) {
+        const startTime = performance.now();
+        for (const cuboid of cuboids) {
+            cuboid.init(this.gl, this.shader);
+        }
+        const elapsedTime = performance.now() - startTime;
+        console.log("Init " + cuboids.length + " cuboids in " + elapsedTime + " ms");
     }
 }

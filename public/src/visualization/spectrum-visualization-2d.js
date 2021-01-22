@@ -31,7 +31,16 @@ class SpectrumVisualization2D {
     }
 
     update(frequencyDomainData) {
-        this.destroy();
+        this.destroy(); // remove the old visualization
+        const newRectangles = this.createRectangles(frequencyDomainData);
+        this.initRectangles(newRectangles);
+        this.rectangles = newRectangles;
+    }
+
+    createRectangles(frequencyDomainData) {
+        const rectangles = [];
+
+        const startTime = performance.now();
 
         // width of each rectangle
         // one rectangle for each frequency bin
@@ -48,9 +57,24 @@ class SpectrumVisualization2D {
             const size = [width, height];
             const interpolatedColor = GraphicsUtils.interpolateColor(this.bottomColor, this.topColor, normalizedValue);
             const rectangle = new Rectangle(position, size, this.bottomColor, interpolatedColor);
-            rectangle.init(this.gl, this.shader);
-            this.rectangles.push(rectangle);
+            rectangles.push(rectangle);
             x += width;
         }
+
+        const elapsedTime = performance.now() - startTime;
+        console.log("Create " + rectangles.length + " rectangles in " + elapsedTime + " ms");
+
+        return rectangles;
+    }
+
+    initRectangles(rectangles) {
+        const startTime = performance.now();
+
+        for (const rectangle of rectangles) {
+            rectangle.init(this.gl, this.shader);
+        }
+
+        const elapsedTime = performance.now() - startTime;
+        console.log("Init " + rectangles.length + " rectangles in " + elapsedTime + " ms");
     }
 }
