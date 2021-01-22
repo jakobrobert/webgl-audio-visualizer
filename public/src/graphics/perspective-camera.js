@@ -20,16 +20,29 @@ class PerspectiveCamera {
         return this.viewProjectionMatrix;
     }
 
+    getPosition() {
+        // return copy to prevent accidental change
+        return [...this.position];
+    }
+
     setPosition(position) {
         this.position = position;
         this.updateViewMatrix();
         this.updateViewProjectionMatrix();
     }
 
+    getPitch() {
+        return this.pitchInDegrees;
+    }
+
     setPitch(pitchInDegrees) {
         this.pitchInDegrees = pitchInDegrees;
         this.updateViewMatrix();
         this.updateViewProjectionMatrix();
+    }
+
+    getYaw() {
+        return this.yawInDegrees;
     }
 
     setYaw(yawInDegrees) {

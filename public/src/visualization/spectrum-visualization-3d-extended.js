@@ -12,6 +12,17 @@ class SpectrumVisualization3DExtended {
         this.camera.setPosition([2.0, 2.0, 3.0]);
         this.camera.setYaw(30.0);
         this.camera.setPitch(-30.0);
+
+        // calculate move vector => used to move the camera in each update
+
+        /*const cameraMoveMatrix = glMatrix.mat4.create();
+        // calculate rotation matrix for yaw = rotation about y-axis
+        const yaw = glMatrix.glMatrix.toRadian(-this.camera.getYaw());
+        glMatrix.mat4.rotateY(cameraMoveMatrix, cameraMoveMatrix, yaw);*/
+
+        // initial, without any transform: move along positive z-axis (out of screen, backwards)
+        // use same increment for each update as the visualization, so it is in-sync
+        this.cameraMoveVector = glMatrix.vec3.fromValues(0.0, 0.0, this.depth);
     }
 
     init(gl, shader) {
@@ -56,8 +67,12 @@ class SpectrumVisualization3DExtended {
 
         // increase depth offset for each update, so the visualizations for each update are stacked onto each other
         this.depthOffset += this.depth;
+
         // update camera position so the visualization stays inside the viewport
-        // TODO is a bit hacky, needs fine-tuning
-        this.camera.setPosition([this.depthOffset + 2.0, 2.0, this.depthOffset + 3.0]);
+        // TODO: simplify code
+        const cameraPosition = this.camera.getPosition();
+        const newCameraPosition = glMatrix.vec3.fromValues(cameraPosition[0], cameraPosition[1], cameraPosition[2]);
+        glMatrix.vec3.add(newCameraPosition, newCameraPosition, this.cameraMoveVector);
+        this.camera.setPosition(newCameraPosition);
     }
 }
