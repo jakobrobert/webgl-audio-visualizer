@@ -1,9 +1,15 @@
 class SpectrumVisualization2D {
-    constructor(position, bottomColor, topColor) {
+    constructor(position, bottomColor, topColor, camera) {
         this.position = position;
         this.bottomColor = bottomColor;
         this.topColor = topColor;
+        this.camera = camera;
+
         this.rectangles = [];
+
+        this.camera.setPosition([0.0, 0.0, 3.0]);
+        this.camera.setYaw(0.0);
+        this.camera.setPitch(0.0);
     }
 
     init(gl, shader) {
@@ -18,9 +24,9 @@ class SpectrumVisualization2D {
         this.rectangles = [];
     }
 
-    draw(viewProjectionMatrix) {
+    draw() {
         for (const rectangle of this.rectangles) {
-            rectangle.draw(viewProjectionMatrix);
+            rectangle.draw(this.camera.getViewProjectionMatrix());
         }
     }
 

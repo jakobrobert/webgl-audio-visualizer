@@ -11,8 +11,6 @@ const RED = [1.0, 0.0, 0.0];
 const VISUALIZATION_3D_SIMPLE_DEPTH = 0.5;
 const VISUALIZATION_3D_EXTENDED_DEPTH = 0.01;
 
-let cameraZ = 2.0;
-
 let audioCtx;
 let analyzer;
 let audioBuffer;
@@ -99,7 +97,7 @@ function initRenderer() {
     gl.frontFace(gl.CCW); // front faces are in counter-clockwise order
 
     const aspectRatio = canvas.width / canvas.height;
-    camera = new PerspectiveCamera([1.0, 2.0, 2.0], FOV, aspectRatio, NEAR, FAR);
+    camera = new PerspectiveCamera(FOV, aspectRatio, NEAR, FAR);
 
     shader2D = new Shader(gl, "assets/shaders/shader-2d", () => {
         shader3D = new Shader(gl, "assets/shaders/shader-3d", () => {
@@ -135,7 +133,7 @@ function createSpectrumVisualization2D() {
         visualization.destroy();
     }
     const position = [-1.0, -1.0];
-    visualization = new SpectrumVisualization2D(position, GREEN, RED);
+    visualization = new SpectrumVisualization2D(position, GREEN, RED, camera);
     visualization.init(gl, shader2D);
 }
 
@@ -148,7 +146,7 @@ function createSpectrumVisualization3DSimple() {
         visualization.destroy();
     }
     const position = [-1.0, -1.0, 0.0];
-    visualization = new SpectrumVisualization3DSimple(position, VISUALIZATION_3D_SIMPLE_DEPTH, GREEN, RED);
+    visualization = new SpectrumVisualization3DSimple(position, VISUALIZATION_3D_SIMPLE_DEPTH, GREEN, RED, camera);
     visualization.init(gl, shader3D);
 }
 
@@ -160,7 +158,7 @@ function createSpectrumVisualization3DExtended() {
     if (visualization) {
         visualization.destroy();
     }
-    const position = [-1.0, -1.0, -1.0];
+    const position = [-1.0, -1.0, 0.0];
     visualization = new SpectrumVisualization3DExtended(position, VISUALIZATION_3D_EXTENDED_DEPTH, GREEN, RED, camera);
     visualization.init(gl, shader3D);
 }
@@ -227,7 +225,7 @@ function render() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     if (visualization) {
-        visualization.draw(camera.getViewProjectionMatrix());
+        visualization.draw();
     }
 }
 

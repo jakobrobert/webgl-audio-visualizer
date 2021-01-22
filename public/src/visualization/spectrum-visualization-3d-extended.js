@@ -4,9 +4,15 @@ class SpectrumVisualization3DExtended {
         this.depth = depth;
         this.bottomColor = bottomColor;
         this.topColor = topColor;
+        this.camera = camera;
+
         this.cuboids = [];
         this.depthOffset = 0.0;
-        this.camera = camera;
+
+        this.cameraStartPosition = [2.0, 2.0, 3.0];
+        this.camera.setPosition(this.cameraStartPosition);
+        this.camera.setYaw(30.0);
+        this.camera.setPitch(-30.0);
     }
 
     init(gl, shader) {
@@ -21,9 +27,9 @@ class SpectrumVisualization3DExtended {
         this.cuboids = [];
     }
 
-    draw(viewProjectionMatrix) {
+    draw() {
         for (const cuboid of this.cuboids) {
-            cuboid.draw(viewProjectionMatrix);
+            cuboid.draw(this.camera.getViewProjectionMatrix());
         }
     }
 
@@ -51,8 +57,12 @@ class SpectrumVisualization3DExtended {
 
         // increase depth offset for each update, so the visualizations for each update are stacked onto each other
         this.depthOffset += this.depth;
+
         // update camera position so the visualization stays inside the viewport
-        // TODO is a bit hacky, needs fine-tuning
-        this.camera.updateEyePosition([this.depthOffset + 2.0, 2.0, this.depthOffset + 2.0]);
+        // move it along the positive z-axis just as the visualization
+        const cameraX = this.cameraStartPosition[0];
+        const cameraY = this.cameraStartPosition[1];
+        const cameraZ = this.cameraStartPosition[2] + this.depthOffset;
+        this.camera.setPosition([cameraX, cameraY, cameraZ]);
     }
 }
