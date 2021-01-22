@@ -33,44 +33,6 @@ class SpectrumVisualization3DExtended {
         }
     }
 
-    /*
-    update(frequencyDomainData) {
-        // width of each cuboid
-        // one cuboid for each frequency bin
-        // in normalized coords, whole viewport has a size of 2 x 2
-        const width = 2.0 / frequencyDomainData.length;
-
-        let x = this.position[0];
-        const y = this.position[1];
-        const z = this.position[2] + this.depthOffset;
-
-        // TODO Duplicate code (with 3D Simple)
-        const newCuboids = [];
-
-        for (const value of frequencyDomainData) {
-            const normalizedValue = value / 255.0;
-            const height = 2.0 * normalizedValue;
-            const position = [x, y, z];
-            const size = [width, height, this.depth];
-            const interpolatedColor = GraphicsUtils.interpolateColor(this.bottomColor, this.topColor, normalizedValue);
-            const cuboid = new Cuboid(position, size, this.bottomColor, interpolatedColor);
-            this.cuboids.push(cuboid);
-            newCuboids.push(cuboid);
-            x += width;
-        }
-
-        const startTime = performance.now();
-        for (const cuboid of newCuboids) {
-            cuboid.init(this.gl, this.shader);
-        }
-        const elapsedTime = performance.now() - startTime;
-        console.log("Init " + newCuboids.length + " cuboids in " + elapsedTime + " ms");
-
-        // increase depth offset for each update, so the visualizations for each update are stacked onto each other
-        this.depthOffset += this.depth;
-    }
-    */
-
     update(frequencyDomainData) {
         const newCuboids = this.createCuboids(frequencyDomainData);
         this.initCuboids(newCuboids);
@@ -102,6 +64,9 @@ class SpectrumVisualization3DExtended {
             cuboids.push(cuboid);
             x += width;
         }
+
+        // increase depth offset for each update, so the visualizations for each update are stacked onto each other
+        this.depthOffset += this.depth;
 
         const elapsedTime = performance.now() - startTime;
         console.log("Create " + cuboids.length + " cuboids in " + elapsedTime + " ms");
