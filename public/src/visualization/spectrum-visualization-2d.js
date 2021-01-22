@@ -31,10 +31,10 @@ class SpectrumVisualization2D {
     }
 
     update(frequencyDomainData) {
-        this.destroy();
-        const rectangles = this.createRectangles(frequencyDomainData);
-        this.initRectangles(rectangles);
-        this.rectangles = rectangles;
+        this.destroy(); // remove the old visualization
+        const newRectangles = this.createRectangles(frequencyDomainData);
+        this.initRectangles(newRectangles);
+        this.rectangles = newRectangles;
     }
 
     createRectangles(frequencyDomainData) {
