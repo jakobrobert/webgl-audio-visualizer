@@ -213,8 +213,14 @@ function updateTime() {
 }
 
 function runRenderLoop() {
+    let oldTime = performance.now();
     const loop = () => {
         render();
+        const currTime = performance.now();
+        const frameTime = currTime - oldTime;
+        const fps = 1000.0 / frameTime;
+        oldTime = currTime
+        console.log("Frame time: " + frameTime + " ms, FPS: " + fps.toFixed(1));
         requestAnimationFrame(loop);
     };
     requestAnimationFrame(loop);
