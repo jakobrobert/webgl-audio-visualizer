@@ -43,6 +43,9 @@ class SpectrumVisualization3DExtended {
         const y = this.position[1];
         const z = this.position[2] + this.depthOffset;
 
+        // TODO Duplicate code (with 3D Simple)
+        const newCuboids = [];
+
         for (const value of frequencyDomainData) {
             const normalizedValue = value / 255.0;
             const height = 2.0 * normalizedValue;
@@ -50,9 +53,13 @@ class SpectrumVisualization3DExtended {
             const size = [width, height, this.depth];
             const interpolatedColor = GraphicsUtils.interpolateColor(this.bottomColor, this.topColor, normalizedValue);
             const cuboid = new Cuboid(position, size, this.bottomColor, interpolatedColor);
-            cuboid.init(this.gl, this.shader);
             this.cuboids.push(cuboid);
+            newCuboids.push(cuboid);
             x += width;
+        }
+
+        for (const cuboid of newCuboids) {
+            cuboid.init(this.gl, this.shader);
         }
 
         // increase depth offset for each update, so the visualizations for each update are stacked onto each other

@@ -44,6 +44,8 @@ class SpectrumVisualization3DSimple {
         const y = this.position[1];
         const z = this.position[2];
 
+        const newCuboids = [];
+
         for (const value of frequencyDomainData) {
             const normalizedValue = value / 255.0;
             const height = 2.0 * normalizedValue;
@@ -51,9 +53,13 @@ class SpectrumVisualization3DSimple {
             const size = [width, height, this.depth];
             const interpolatedColor = GraphicsUtils.interpolateColor(this.bottomColor, this.topColor, normalizedValue);
             const cuboid = new Cuboid(position, size, this.bottomColor, interpolatedColor);
-            cuboid.init(this.gl, this.shader);
             this.cuboids.push(cuboid);
+            newCuboids.push(cuboid);
             x += width;
+        }
+
+        for (const cuboid of newCuboids) {
+            cuboid.init(this.gl, this.shader);
         }
     }
 }
