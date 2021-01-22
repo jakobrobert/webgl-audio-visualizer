@@ -58,8 +58,11 @@ class SpectrumVisualization3DSimple {
             x += width;
         }
 
+        const startTime = performance.now();
         for (const cuboid of newCuboids) {
             cuboid.init(this.gl, this.shader);
         }
+        const elapsedTime = performance.now() - startTime;
+        console.log("Init " + newCuboids.length + " cuboids in " + elapsedTime + " ms");
     }
 }

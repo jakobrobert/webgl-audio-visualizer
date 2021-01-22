@@ -58,9 +58,12 @@ class SpectrumVisualization3DExtended {
             x += width;
         }
 
+        const startTime = performance.now();
         for (const cuboid of newCuboids) {
             cuboid.init(this.gl, this.shader);
         }
+        const elapsedTime = performance.now() - startTime;
+        console.log("Init " + newCuboids.length + " cuboids in " + elapsedTime + " ms");
 
         // increase depth offset for each update, so the visualizations for each update are stacked onto each other
         this.depthOffset += this.depth;

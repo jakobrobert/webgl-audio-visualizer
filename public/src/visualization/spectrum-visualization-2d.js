@@ -41,7 +41,6 @@ class SpectrumVisualization2D {
         let x = this.position[0];
         const y = this.position[1];
 
-        // create rectangles
         for (const value of frequencyDomainData) {
             const normalizedValue = value / 255.0;
             const height = 2.0 * normalizedValue;
@@ -53,8 +52,11 @@ class SpectrumVisualization2D {
             x += width;
         }
 
+        const startTime = performance.now();
         for (const rectangle of this.rectangles) {
             rectangle.init(this.gl, this.shader);
         }
+        const elapsedTime = performance.now() - startTime;
+        console.log("Init " + this.rectangles.length + " rectangles in " + elapsedTime + " ms");
     }
 }
